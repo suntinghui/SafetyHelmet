@@ -1,0 +1,177 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>蓝牙识人</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+
+		<style>
+			.item-div {
+				margin: 10px auto;
+				display: -webkit-box;
+				-webkit-box-pack: center;
+				-webkit-box-align: center;
+			}
+			
+			.item-name {
+				width: 25%;
+				color: #666666;
+				font-size: 16px;
+				text-align: right;
+			}
+			
+			.item-value {
+				margin-left: 20px;
+				width: 75%;
+				color: #333333;
+				font-size: 16px;
+			}
+			
+			.redhat {
+				color: #FF6666;
+			}
+			
+			.greenhat {
+				color: #009966;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav navbar">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left backbtn"></a>
+			<h1 id="title" class="mui-title">蓝牙识人</h1>
+		</header>
+
+		<div class="mui-content">
+			<div class="mui-scroll mui-card">
+				<ul class="mui-table-view" id="list">
+					<li class="mui-table-view-cell">
+						<a class="mui-navigate-right">
+							<div class="item-div">
+								<div class="item-name">人员姓名</div>
+								<div class="item-value">王志亮</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">性别</div>
+								<div class="item-value">男</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">身份证号</div>
+								<div class="item-value">371425198606217319</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">所属单位</div>
+								<div class="item-value">北京新世纪建筑有限公司</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">佩戴状态</div>
+								<div class="item-value redhat">未佩戴</div>
+							</div>
+						</a>
+					</li>
+
+					<li class="mui-table-view-cell">
+						<a class="mui-navigate-right">
+							<div class="item-div">
+								<div class="item-name">人员姓名</div>
+								<div class="item-value">王志亮</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">性别</div>
+								<div class="item-value">男</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">身份证号</div>
+								<div class="item-value">371425198606217319</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">所属单位</div>
+								<div class="item-value">北京新世纪建筑有限公司</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">佩戴状态</div>
+								<div class="item-value greenhat">已佩戴</div>
+							</div>
+						</a>
+					</li>
+
+					<li class="mui-table-view-cell">
+						<a class="mui-navigate-right">
+							<div class="item-div">
+								<div class="item-name">人员姓名</div>
+								<div class="item-value">王志亮</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">性别</div>
+								<div class="item-value">男</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">身份证号</div>
+								<div class="item-value">371425198606217319</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">所属单位</div>
+								<div class="item-value">北京新世纪建筑有限公司</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">佩戴状态</div>
+								<div class="item-value redhat">未佩戴</div>
+							</div>
+						</a>
+					</li>
+
+					<li class="mui-table-view-cell">
+						<a class="mui-navigate-right">
+							<div class="item-div">
+								<div class="item-name">人员姓名</div>
+								<div class="item-value">王志亮</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">性别</div>
+								<div class="item-value">男</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">身份证号</div>
+								<div class="item-value">371425198606217319</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">所属单位</div>
+								<div class="item-value">北京新世纪建筑有限公司</div>
+							</div>
+							<div class="item-div">
+								<div class="item-name">佩戴状态</div>
+								<div class="item-value greenhat">已佩戴</div>
+							</div>
+						</a>
+					</li>
+
+				</ul>
+			</div>
+
+		</div>
+
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init();
+
+			mui('.scroll-content').scroll({
+				indicators: true //是否显示滚动条
+			});
+
+			mui('#list').on('tap', 'li', function(e) {
+				mui.openWindow({
+					id: Math.random() + '',
+					url: 'persionDetail.html',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+				});
+			});
+		</script>
+	</body>
+
+</html>
