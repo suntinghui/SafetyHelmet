@@ -106,7 +106,7 @@
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">安全帽状态</div>
-						<div class="item-value filelink">点击查看状态详情</div>
+						<div class="item-value filelink" id="helmetDetail">点击查看状态详情</div>
 					</li>
 				</ul>
 			</div>
@@ -136,6 +136,17 @@
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'showMyLocation.html',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+				});
+			}, false);
+
+			document.getElementById('helmetDetail').addEventListener('tap', function() {
+				mui.openWindow({
+					id: Math.random() + '',
+					url: 'helmetDetail.html',
 					preload: true,
 					show: {
 						aniShow: 'pop-in'

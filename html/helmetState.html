@@ -46,23 +46,23 @@
 				<ul class="mui-table-view" id="list">
 					<li class="mui-table-view-cell">
 						<a class="mui-navigate-right">
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">帽子型号</div>
 								<div class="item-value">DZ102938-9</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">穿戴状态</div>
 								<div class="item-value">正常</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">穿戴人</div>
 								<div class="item-value">王志亮</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div currentLocation">
 								<div class="item-name">实时位置</div>
 								<div class="item-value filelink">点击查看</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">剩余电量</div>
 								<div class="item-value redhat">85%</div>
 							</div>
@@ -71,23 +71,23 @@
 
 					<li class="mui-table-view-cell">
 						<a class="mui-navigate-right">
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">帽子型号</div>
 								<div class="item-value">DZ102938-9</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">穿戴状态</div>
 								<div class="item-value">正常</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">穿戴人</div>
 								<div class="item-value">王志亮</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div currentLocation">
 								<div class="item-name">实时位置</div>
 								<div class="item-value filelink">点击查看</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">剩余电量</div>
 								<div class="item-value redhat">85%</div>
 							</div>
@@ -96,23 +96,23 @@
 
 					<li class="mui-table-view-cell">
 						<a class="mui-navigate-right">
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">帽子型号</div>
 								<div class="item-value">DZ102938-9</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">穿戴状态</div>
 								<div class="item-value">正常</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">穿戴人</div>
 								<div class="item-value">王志亮</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div currentLocation">
 								<div class="item-name">实时位置</div>
 								<div class="item-value filelink">点击查看</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">剩余电量</div>
 								<div class="item-value redhat">85%</div>
 							</div>
@@ -121,23 +121,23 @@
 
 					<li class="mui-table-view-cell">
 						<a class="mui-navigate-right">
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">帽子型号</div>
 								<div class="item-value">DZ102938-9</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">穿戴状态</div>
 								<div class="item-value">正常</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">穿戴人</div>
 								<div class="item-value">王志亮</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div currentLocation">
 								<div class="item-name">实时位置</div>
 								<div class="item-value filelink">点击查看</div>
 							</div>
-							<div class="item-div">
+							<div class="item-div other">
 								<div class="item-name">剩余电量</div>
 								<div class="item-value redhat">85%</div>
 							</div>
@@ -157,10 +157,21 @@
 				indicators: true //是否显示滚动条
 			});
 
-			mui('#list').on('tap', 'li', function(e) {
+			mui('#list').on('tap', '.currentLocation', function(e) {
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'showMyLocation.html',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+				});
+			});
+
+			mui('#list').on('tap', '.other', function(e) {
+				mui.openWindow({
+					id: Math.random() + '',
+					url: 'helmetDetail.html',
 					preload: true,
 					show: {
 						aniShow: 'pop-in'
