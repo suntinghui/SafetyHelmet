@@ -44,24 +44,20 @@
 		<div class="mui-content">
 			<div class="mui-scroll mui-card">
 				<ul class="mui-table-view" id="list">
+					<img src="../img/head.jpg" class="headImg" style="width: 60px; position: fixed; right: 20px;" />
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">人员姓名</div>
 						<div class="item-value">王志亮</div>
 					</li>
 
-					<li class="mui-table-view-cell item-div">
-						<div class="item-name">性别</div>
-						<div class="item-value">男</div>
-					</li>
-
-					<li class="mui-table-view-cell item-div">
+					<li class="mui-table-view-cell item-div" >
 						<div class="item-name">性别</div>
 						<div class="item-value">男</div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">身份证号</div>
-						<div class="item-value">371425198606217310</div>
+						<div class="item-value filelink" id="card">371425198606217310</div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
@@ -131,6 +127,17 @@
 		<script src="../js/mui.min.js"></script>
 		<script type="text/javascript">
 			mui.init();
+			
+			document.getElementById('card').addEventListener('tap', function(){
+				mui.openWindow({
+					id: Math.random() + '',
+					url: 'showCardId.html',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+				});
+			}, false);
 
 			document.getElementById('currentLocation').addEventListener('tap', function() {
 				mui.openWindow({
