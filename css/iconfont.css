@@ -10,13 +10,19 @@
   -webkit-font-smoothing: antialiased;
 }
 
+.icon-ly:before { content: "\e609"; }
+
 .icon-daiban:before { content: "\e614"; }
 
 .icon-daiban1:before { content: "\e601"; }
 
+.icon-xianchang:before { content: "\e618"; }
+
 .icon-hetongqicao:before { content: "\e624"; }
 
 .icon-daiyue:before { content: "\e63f"; }
+
+.icon-tixing:before { content: "\e626"; }
 
 .icon-yiban:before { content: "\e623"; }
 
