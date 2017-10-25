@@ -3,7 +3,7 @@
 
 	<head>
 		<meta charset="utf-8">
-		<title>安全帽系统</title>
+		<title></title>
 		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -15,23 +15,18 @@
 	</head>
 
 	<body>
-
 		<nav class="mui-bar mui-bar-tab tabbar">
-			<a class="mui-tab-item mui-active" id="illegalReminder.html" target="illegalReminder.html">
-				<span class="mui-icon iconfont icon-tixing"><span class="mui-badge" style="margin-left: -5px;">5</span></span>
-				<span class="mui-tab-label">违规提醒</span>
-			</a>
-			<a class="mui-tab-item" id="BLEFind.html" target="BLEFind.html">
-				<span class="mui-icon iconfont icon-ly"></span>
-				<span class="mui-tab-label">蓝牙识人</span>
-			</a>
-			<a class="mui-tab-item" id="fieldDistr.html" target="fieldDistr.html">
+			<a class="mui-tab-item mui-active" id="fieldDistr.html" target="fieldDistr.html">
 				<span class="mui-icon iconfont icon-xianchang"></span>
 				<span class="mui-tab-label">现场分布</span>
 			</a>
-			<a class="mui-tab-item" id="setting.html" target="setting.html">
-				<span class="mui-icon iconfont icon-shezhi"></span>
-				<span class="mui-tab-label">设置</span>
+			<a class="mui-tab-item" id="illegalReminder.html" target="illegalReminder.html">
+				<span class="mui-icon iconfont icon-tixing"><span class="mui-badge" style="margin-left: -5px;">5</span></span>
+				<span class="mui-tab-label">违规提醒</span>
+			</a>
+			<a class="mui-tab-item" id="helmetState.html" target="helmetState.html">
+				<span class="mui-icon iconfont icon-anquanmao"></span>
+				<span class="mui-tab-label">安全帽一览</span>
 			</a>
 		</nav>
 
@@ -42,9 +37,9 @@
 			mui.init();
 
 			// 解决软键盘弹出时底部元素上浮的问题  http://ask.dcloud.net.cn/article/12615
-			var subpages = ['illegalReminder.html', 'BLEFind.html', 'fieldDistr.html', 'setting.html'];
+			var subpages = ['fieldDistr.html','illegalReminder.html', 'helmetState.html'];
 			var subpage_style = {
-				top: '0px',
+				top: '-51px',
 				bottom: '51px'
 			};
 
@@ -53,7 +48,7 @@
 			//创建子页面，首个选项卡页面显示，其它均隐藏；
 			mui.plusReady(function() {
 				var self = plus.webview.currentWebview();
-				for(var i = 0; i < 4; i++) {
+				for(var i = 0; i < 3; i++) {
 					var temp = {};
 					var sub = plus.webview.create(subpages[i], subpages[i], subpage_style);
 					if(i > 0) {
@@ -68,9 +63,19 @@
 
 			//当前激活选项
 			var activeTab = subpages[0];
+			var title = document.getElementById("title");
+			
 			//选项卡点击事件
 			mui('.mui-bar-tab').on('tap', 'a', function(e) {
 				var targetTab = this.getAttribute('target');
+				if (targetTab == activeTab) {
+					return;
+				}
+				
+				//titleView.titletext = this.querySelector('.mui-tab-label').innerHTML;
+				//console.log(titleView.titletext);
+				titleView.drawText(this.querySelector('.mui-tab-label').innerHTML, {top:'0px',left:'0px',width:'100%',height:'100%'}, {align:'center',weight:'bold'}, 'title');
+				
 				//显示目标选项卡
 				//若为iOS平台或非首次显示，则直接显示
 				if(mui.os.ios || aniShow[targetTab]) {
@@ -113,6 +118,394 @@
 				plusReady();
 			} else {
 				document.addEventListener('plusready', plusReady, false);
+			}
+		</script>
+
+		<script>
+			var aniShow = "pop-in";
+			var menu = null,
+				showMenu = false;
+			var isInTransition = false;
+			var _self;
+			var titleView;
+			
+			//只有ios支持的功能需要在Android平台隐藏；
+			if(mui.os.android) {
+				var list = document.querySelectorAll('.ios-only');
+				if(list) {
+					for(var i = 0; i < list.length; i++) {
+						list[i].style.display = 'none';
+					}
+				}
+				//Android平台暂时使用slide-in-right动画
+				if(parseFloat(mui.os.version) < 4.4) {
+					aniShow = "slide-in-right";
+				}
+			}
+			//初始化，并预加载webview模式的选项卡			
+			function preload() {
+				var menu_style = {
+					left: "-70%",
+					width: '70%',
+					popGesture: "none",
+					render: "always"
+				};
+
+				if(mui.os.ios) {
+					menu_style.zindex = 9998;
+				}
+
+				//处理侧滑导航，为了避免和子页面初始化等竞争资源，延迟加载侧滑页面；
+				menu = mui.openWindow({
+					id: 'index-menu',
+					url: 'index-menu.html',
+					styles: menu_style,
+					show: {
+						aniShow: 'none'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+			}
+			mui.plusReady(function() {
+				//读取本地存储，检查是否为首次启动
+				var showGuide = plus.storage.getItem("lauchFlag");
+				//仅支持竖屏显示
+				plus.screen.lockOrientation("portrait-primary");
+				if(showGuide) {
+					//有值，说明已经显示过了，无需显示；
+					//关闭splash页面；
+					plus.navigator.closeSplashscreen();
+					plus.navigator.setFullscreen(false);
+					//预加载
+					preload();
+				} else {
+					//显示启动导航
+					mui.openWindow({
+						id: 'guide',
+						url: 'examples/guide.html',
+						styles: {
+							popGesture: "none"
+						},
+						show: {
+							aniShow: 'none'
+						},
+						waiting: {
+							autoShow: false
+						}
+					});
+					//延迟的原因：优先打开启动导航页面，避免资源争夺
+					setTimeout(function() {
+						//预加载
+						preload();
+					}, 200);
+				}
+
+				//绘制顶部图标
+				_self = plus.webview.currentWebview();
+				titleView = _self.getNavigationbar();
+
+				if(!titleView) {
+					titleView = plus.webview.getLaunchWebview().getNavigationbar();
+				}
+				
+				titleView.drawText('现场分布', {top:'0px',left:'0px',width:'100%',height:'100%'}, {align:'center',weight:'bold'}, 'title');
+
+				titleView.drawRect("#cccccc", {
+					top: "43px",
+					height: "1px",
+					left: "0px"
+				}); //绘制底部边线
+
+				//开启回弹
+				_self.setStyle({
+					bounce: "vertical",
+					bounceBackground: "#efeff4",
+					popGesture: 'none' //首页有侧滑菜单，因此屏蔽首页的侧滑关闭功能
+				});
+
+				//绘制左上角menu图标
+				var bitmap_menu = new plus.nativeObj.Bitmap("menu");
+				bitmap_menu.loadBase64Data("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAYAAAAj6qa3AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAAASAAAAEgARslrPgAAArJJREFUaN7tmE1IVFEUx393nGk3uLAUIjMRTYRy08IvWkwN6SjqSsQEaZFDhQtdGL5BI0xzYQRBBC7EXPmBKEFqRgR+0U4cd7OR2haIowttdE6LmcF0chzHV0/j/VYXDvfc8z/3nPMuD0xMTExM9OSJSPDcOWjNkaDdbnQ0R6H0c9V4X4I2G5z3oEZGgIuQng7BDnA6oadHqbW1w/e3OUQaGoBiSEvTL66ktzA6Cs++KbW6etBqPfkBkRsP5IeF90FV1Z7dchlpbw+tW1oO92NZhuZmkALIz9cvAcF+WFkBbkN0AiyJO47ceOArangYqNgvnJswNwe2B9DRoZ8gfUmgBaJKvQ+qq/8g/A7icsFTpSybm8c5QUTp2JqglIgOCThS+AuYnQXbFlJenohwI4hjBjxulWByMljfoHw+kAuQmnrWhUeIYwYkPUR5vSBN+4VLU2i42LagrOysCT9GAhgLT3EP/N5Lygp5eRDIh8pKo4X8A7Qqkbo60G6IbGyApomIgPZdZGcHtOsitbVGR3lcEpi2ntciRUUgV2B6GlgAux1oht1d4BbU10O3V6mhofj9assSHBsDFlC5uTpKzEbcbuhyKsv8/EFrAg+hrkdKLS6GElFaClIcTsTLcCLeweAgeO6JbG9D12elxsfjCNSBysoCcYdaSy8kB3X4k1yH763nowRLSkB+oiYn2auIRggEQD5ATQ08dys1MRHDzyWRzk4gGzIydEzANaS3F7pfKYvXq5/faAHh1tDei/j9oF0VWV8HT5NIQcFfPPi0EamINodIYaHR0ZiYmMQkxlegzSGSkgKWZSQz0+hAE8f6A3y+0FPd74+yxt5cUQHiRg0MGC0jcQKfwOUKraemDlpP8EPk/yBGBah+mJkBy13E6TQ60MTZ/YJaWjI6ChMTE5NTyS8f3/56lzy8mQAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxNy0xMC0yNlQwMDo1MzowOCswODowMJFR0iMAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTctMTAtMjZUMDA6NTM6MDgrMDg6MDDgDGqfAAAAYnRFWHRzdmc6YmFzZS11cmkAZmlsZTovLy9ob21lL2FkbWluL2ljb24tZm9udC90bXAvaWNvbl9zbWNnNzh6eWI0cTg1bWkvJUU0JUJFJUE3JUU4JUJFJUI5JUU2JUEwJThGLnN2Z0vCgwYAAAAASUVORK5CYII=");
+				titleView.drawBitmap(bitmap_menu, {}, {
+					top: "10px",
+					left: "10px",
+					width: "24px",
+					height: "24px"
+				});
+
+				var about_left = window.innerWidth - 34;
+				var bitmap = new plus.nativeObj.Bitmap("ble");
+				bitmap.loadBase64Data("data:image/png;base64,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");
+				titleView.drawBitmap(bitmap, {}, {
+					top: "10px",
+					left: about_left + "px",
+					width: "24px",
+					height: "24px"
+				});
+
+				titleView.interceptTouchEvent(true);
+				titleView.addEventListener("click", function(e) {
+					var x = e.clientX;
+					if(x < 44) { //触发menu菜单
+						var _left = parseInt(_self.getStyle().left);
+						if(_left > 0) { //处于显示状态
+							closeMenu();
+						} else {
+							openMenu();
+						}
+					} else if(x > about_left) { //触发关于页面
+						var aniShow = mui.os.plus ? "slide-in-right" : "zoom-fade-out";
+						mui.openWindow({
+							url: "BLEFind.html",
+							id: "info",
+							styles: {
+								popGesture: "close",
+								statusbar: {
+									background: "#f7f7f7"
+								}
+							},
+							show: {
+								aniShow: aniShow,
+								duration: 300
+							}
+						});
+					}
+				}, false);
+
+				//启用侧滑拖拽操作，延时的原因是menu页是延时创建的，所以这里需要相应延时
+				setTimeout(function() {
+					_self.drag({
+						direction: "right",
+						moveMode: "followFinger"
+					}, {
+						view: menu,
+						moveMode: "follow"
+					}, function(e) {
+						//console.log(JSON.stringify(e));
+					});
+				}, 350);
+
+			});
+			//主列表点击事件
+			mui('#list').on('tap', 'a', function() {
+				var id = this.getAttribute("data-wid");
+				if(!id) {
+					id = this.getAttribute('href');
+				}
+				var href = this.getAttribute('href');
+
+				//非plus环境，直接走href跳转
+				if(!mui.os.plus) {
+					location.href = href;
+					return;
+				}
+
+				var titleType = this.getAttribute("data-title-type");
+
+				var webview_style = {
+					popGesture: "close"
+				}
+				var extras = {};
+
+				//处理原生图片轮播
+				if(~id.indexOf("slider-native.html")) {
+					webview_style.titleNView = { //配置原生标题
+						'backgroundColor': '#f7f7f7',
+						'titleText': this.innerHTML.trim(),
+						'titleColor': '#000000',
+						autoBackButton: true,
+						splitLine: {
+							color: '#cccccc'
+						}
+					};
+
+					webview_style.subNViews = [{ //配置图片轮播
+						id: 'slider-native',
+						type: 'ImageSlider',
+						styles: {
+							left: 0,
+							right: 0,
+							top: 0,
+							height: '200px',
+							position: 'static',
+							loop: true,
+							images: [{
+								src: '_www/images/yuantiao.jpg',
+								width: '100%'
+							}, {
+								src: '_www/images/shuijiao.jpg',
+								width: '100%',
+							}, {
+								src: '_www/images/muwu.jpg',
+								width: '100%',
+							}, {
+								src: '_www/images/cbd.jpg',
+								width: '100%',
+							}]
+						}
+					}];
+
+					var webview = plus.webview.create(this.href, id, webview_style, extras);
+					webview.show(aniShow, 300);
+					return;
+				}
+
+				if(titleType == "native") {
+					//如下场景不适用下拉回弹：
+					//1、单webview下拉刷新；2、底部有fixed定位的div的页面
+					if(!~id.indexOf('pullrefresh.html') && !~href.indexOf("examples/tabbar.html") && !~href.indexOf("list-to-detail/listview.html")) {
+						webview_style.bounce = "vertical";
+					}
+					//图标页面需要启动硬件加速
+					if(~id.indexOf('icons.html') || ~id.indexOf("echarts.html")) {
+						webview_style.hardwareAccelerated = true;
+					}
+					if(~id.indexOf('im-chat.html')) {
+						extras.acceleration = "none";
+					}
+
+					webview_style.statusbar = {
+						background: "#f7f7f7"
+					}
+
+					mui.openWindowWithTitle({
+						url: href,
+						id: id,
+						styles: webview_style,
+						show: {
+							event: "loaded",
+							extras: extras
+						},
+						waiting: {
+							autoShow: false
+						}
+					}, {
+						title: {
+							text: this.innerText.trim()
+						},
+						back: {
+							image: {
+								base64Data: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAb1BMVEUAAAAAev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8Aev8AAACubimgAAAAI3RSTlMAGfUTGfQTGPMSGPIYGhgaGBsXGxcbFxwXHBccFhwWHRYdHWufDPQAAAABYktHRACIBR1IAAAAB3RJTUUH4QETEBwooeTlkQAAAJVJREFUSMft1EkSgkAQRNFGUXFWHBDBibr/HTUwD5B/48Ig1y+io7u6MqUhf5hsNEY+j5hMgZ/FJ8Xc9ovos3T96utjbfqN/Nb0O/m96Uv5g+mP8ifTn+Ur01/ka9Nf5RvTt/I309/lH6Z/yr9Mn+Q71/MT8B34K/E58Enzv8R/K98HvnF8p3lr8F7izce7lbf3kJ/lDQp9HdBhgg3PAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE3LTAxLTE5VDE2OjI4OjQwKzA4OjAwpTDFwQAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxNy0wMS0xOVQxNjoyODo0MCswODowMNRtfX0AAAAASUVORK5CYII="
+							}
+						}
+					});
+				} else if(href && ~href.indexOf('.html')) {
+					//侧滑菜单需动态控制一下zindex值；
+					if(~id.indexOf('offcanvas-')) {
+						webview_style.zindex = 9998;
+						webview_style.popGesture = ~id.indexOf('offcanvas-with-right') ? "close" : "none";
+					}
+
+					var extras = {};
+					if(id && id == "viewgroup") { //强制启用截屏
+						extras.acceleration = "capture";
+					}
+
+					if(titleType && titleType == "transparent_native") {
+						webview_style.titleNView = {
+							'backgroundColor': '#f7f7f7',
+							'titleText': this.innerHTML.trim(),
+							'titleColor': '#000000',
+							type: 'transparent',
+							autoBackButton: true,
+							splitLine: {
+								color: '#cccccc'
+							}
+						}
+					} else {
+						webview_style.statusbar = {
+							background: "#f7f7f7"
+						}
+					}
+
+					var webview = plus.webview.create(this.href, id, webview_style, extras);
+					webview.addEventListener("titleUpdate", function() {
+						setTimeout(function() {
+							webview.show(aniShow, 300);
+						}, 100);
+					});
+				}
+			});
+			/**
+			 * 显示侧滑菜单
+			 */
+			function openMenu() {
+				plus.webview.startAnimation({
+						'view': _self,
+						'styles': {
+							'fromLeft': '0',
+							'toLeft': "70%"
+						},
+						'action': 'show'
+					}, {
+						'view': menu,
+						'styles': {
+							'fromLeft': "-70%",
+							'toLeft': '0'
+						},
+						'action': 'show'
+					},
+					function(e) {
+						//console.log(JSON.stringify(e));
+						if(e.id == menu.id) { //侧滑菜单打开
+						}
+					}.bind(this)
+				)
+			};
+			/**
+			 * 关闭菜单
+			 */
+			function closeMenu() {
+				plus.webview.startAnimation({
+						'view': _self,
+						'styles': {
+							'fromLeft': '70%',
+							'toLeft': "0"
+						},
+						'action': 'show'
+					}, {
+						'view': menu,
+						'styles': {
+							'fromLeft': "0",
+							'toLeft': '-70%'
+						},
+						'action': 'show'
+					},
+					function(e) {
+						console.log(JSON.stringify(e));
+						if(e.id == _self.id) {}
+					}.bind(this)
+				)
+			};
+			window.addEventListener("menu:close", closeMenu);
+
+			var _toast = false;
+
+			mui.back = function() {
+				if(parseInt(_self.getStyle().left) > 0) {
+					closeMenu();
+					return;
+				}
+
+				if(!_toast || !_toast.isVisible()) {
+					_toast = mui.toast('再按一次返回键退出<br>点此可&nbsp;<span style="border-bottom:1px solid #fff" onclick="openFeedback();">反馈意见</span>', {
+						duration: 'long',
+						type: 'div'
+					});
+				} else {
+					plus.runtime.quit();
+				}
+			}
+
+			//重写mui.menu方法，Android版本menu按键按下可自动打开、关闭侧滑菜单；
+			mui.menu = function() {
+				if(parseInt(_self.getStyle().left) > 0) {
+					closeMenu();
+				} else {
+					openMenu();
+				}
 			}
 		</script>
 
