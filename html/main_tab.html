@@ -123,8 +123,8 @@
 
 		<script>
 			var aniShow = "pop-in";
-			var menu = null,
-				showMenu = false;
+			var menu = null;
+			var	showMenu = false;
 			var isInTransition = false;
 			var _self;
 			var titleView;
@@ -157,8 +157,8 @@
 
 				//处理侧滑导航，为了避免和子页面初始化等竞争资源，延迟加载侧滑页面；
 				menu = mui.openWindow({
-					id: 'index-menu',
-					url: 'index-menu.html',
+					id: 'main-slider',
+					url: 'main-slider.html',
 					styles: menu_style,
 					show: {
 						aniShow: 'none'
@@ -173,6 +173,7 @@
 				var showGuide = plus.storage.getItem("lauchFlag");
 				//仅支持竖屏显示
 				plus.screen.lockOrientation("portrait-primary");
+				
 				if(showGuide) {
 					//有值，说明已经显示过了，无需显示；
 					//关闭splash页面；
@@ -391,6 +392,7 @@
 							}
 						}
 					});
+					
 				} else if(href && ~href.indexOf('.html')) {
 					//侧滑菜单需动态控制一下zindex值；
 					if(~id.indexOf('offcanvas-')) {
@@ -453,6 +455,8 @@
 						}
 					}.bind(this)
 				)
+				
+				showMenu = true;
 			};
 			/**
 			 * 关闭菜单
@@ -478,7 +482,10 @@
 						if(e.id == _self.id) {}
 					}.bind(this)
 				)
+				
+				showMenu = false;
 			};
+			
 			window.addEventListener("menu:close", closeMenu);
 
 			var _toast = false;
