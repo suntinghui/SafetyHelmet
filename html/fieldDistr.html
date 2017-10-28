@@ -235,6 +235,7 @@
 		</div>
 
 		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/constants.js" ></script>
 		<script src="http://cache.amap.com/lbs/static/es5.min.js"></script>
 		<script src="http://webapi.amap.com/maps?v=1.3&key=9568d6f792af393dba669f1bc146cf83"></script>
 		<script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
@@ -258,6 +259,11 @@
 			}, false);
 
 			mui('#list').on('tap', 'li', function(e) {
+				if (menuState() == true) {
+					mui.fire(mui.currentWebview.opener(), "menu:close");
+					return;
+				}
+				
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'persionDetail.html',
@@ -303,6 +309,11 @@
 			});
 
 			map.on('click', function(e) {
+				if (menuState() == true) {
+					mui.fire(mui.currentWebview.opener(), "menu:close");
+					return;
+				}
+				
 				//alert('您在[ ' + e.lnglat.getLng() + ',' + e.lnglat.getLat() + ' ]的位置点击了地图！');
 				mui.openWindow({
 					id: Math.random() + '',

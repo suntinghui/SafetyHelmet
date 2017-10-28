@@ -142,6 +142,7 @@
 		</div>
 
 		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/constants.js" ></script>
 
 		<script type="text/javascript">
 			mui.init();
@@ -151,6 +152,11 @@
 			});
 
 			mui('#list').on('tap', 'li', function(e) {
+				if (menuState() == true) {
+					mui.fire(mui.currentWebview.opener(), "menu:close");
+					return;
+				}
+				
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'showIllegalLocation.html',

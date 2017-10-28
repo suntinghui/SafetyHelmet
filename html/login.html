@@ -33,6 +33,7 @@
 				padding-top: 10px;
 				padding-bottom: 10px;
 				font-size: 17px;
+				background: steelblue;
 			}
 			
 			.link-area {
@@ -51,8 +52,8 @@
 
 	<body>
 		<div class="mui-content" style="padding-top: 35%;">
-			<div id="contentDiv">
 
+			<div id="contentDiv">
 				<div class="mui-input-row">
 					<label style="font-size: 16px; font-family: '微软雅黑';">&nbsp;账号：</label>
 					<input id='userNameText' type="text" class="mui-input-clear mui-input" placeholder="请输入账号" style="font-size: 16px;">
@@ -82,7 +83,7 @@
 			</div>
 
 			<div style="padding: 5%; margin-top: 20px;">
-				<button id='loginBtn' class="mui-btn mui-btn-block mui-btn-primary oabtn">登&nbsp;&nbsp;&nbsp;录</button>
+				<button id='loginBtn' class="mui-btn mui-btn-block mui-btn-primary">登&nbsp;&nbsp;&nbsp;录</button>
 			</div>
 
 		</div>
@@ -229,7 +230,7 @@
 				var nw = plus.webview.create('main_tab.html', 'main_tab.html', {
 					navigationbar: {
 						titletext: '',
-						weight:'bold'
+						weight: 'bold'
 					},
 					top: '0px',
 					bottom: '0px'

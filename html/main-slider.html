@@ -24,10 +24,10 @@
 			}
 			
 			#headDiv {
-				margin-top: 30px;
+				margin-top: 25px;
 				width: 80px;
 				height: 80px;
-				padding: 2px;
+				padding: 0px;
 				background: #ececec;
 				border-radius: 80px;
 				box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4);
@@ -59,14 +59,14 @@
 				width: 100%;
 				background: #618FB7;
 				overflow: hidden;
-				margin: 20px auto;
+				margin-top: 20px;
 			}
 			
 			.itemdiv {
 				display: flex;
 				justify-content: center;
 				align-items: Center;
-				margin: 15px auto;
+				margin: 25px auto;
 			}
 			
 			.itemimg {
@@ -95,27 +95,92 @@
 			<div class="line"></div>
 
 			<div>
-				<div class="itemdiv">
+				<div class="itemdiv" id="personInfo">
 					<img src="../img/perinfo.png" class="itemimg" />个人信息
 				</div>
 
-				<div class="itemdiv">
+				<div class="itemdiv" id="updatePwd">
 					<img src="../img/updatepwd.png" class="itemimg" />修改密码
 				</div>
 
-				<div class="itemdiv">
+				<div class="itemdiv" id="checkUpdate">
 					<img src="../img/checkver.png" class="itemimg" />检查更新
 				</div>
 
-				<div class="itemdiv">
+				<div class="itemdiv" id="aboutUs">
 					<img src="../img/aboutus.png" class="itemimg" />关于我们
 				</div>
 
 			</div>
-			<button id="close-btn" type="button" class="mui-btn mui-btn-danger">退出系统</button>
+			<button id="close-btn" type="button" class="mui-btn mui-btn-danger">退出登录</button>
 		</div>
 
 		<script type="text/javascript" src="../js/mui.min.js"></script>
+
+		<script>
+			document.getElementById('personInfo').addEventListener('tap', function() {
+				close();
+				
+				mui.openWindow({
+					id: Math.random() + '',
+					url: 'personInfo.html',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+				});
+			}, false);
+
+			document.getElementById('updatePwd').addEventListener('tap', function() {
+				close();
+				
+				mui.openWindow({
+					id: Math.random() + '',
+					url: 'updatePwd.html',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+				});
+			}, false);
+
+			document.getElementById('checkUpdate').addEventListener('tap', function() {
+				mui.alert('当前已经是最新版本');
+			}, false);
+
+			document.getElementById('aboutUs').addEventListener('tap', function() {
+				mui.toast('关于我们');
+			}, false);
+
+			document.getElementById('close-btn').addEventListener('tap', function() {
+				close();
+
+				mui.confirm('您确定要注销登录吗？', '提示', ['取消', '确认'], function(e) {
+					if(e.index == 1) {
+						logout();
+					}
+				});
+			}, false);
+
+			function logout() {
+				mui.plusReady(function() {
+					// 获取所有Webview窗口
+					var curr = plus.webview.currentWebview();
+					var wvs = plus.webview.all();
+					for(var i = 0, len = wvs.length; i < len; i++) {
+						//关闭除setting页面外的其他页面
+						if(wvs[i].getURL() == curr.getURL())
+							continue;
+						plus.webview.close(wvs[i]);
+					}
+					//打开login页面后再关闭
+					plus.webview.open('login.html');
+					curr.close();
+
+					mui.toast("已退出登录");
+				});
+			}
+		</script>
 
 		<script type="text/javascript" charset="utf-8">
 			var aniShow = "slide-in-right";
@@ -127,9 +192,9 @@
 				}
 			}
 
-			var subWebview = null,
-				template = null,
-				index = null;
+			var subWebview = null;
+			var	template = null;
+			var	index = null;
 			mui.plusReady(function() {
 				//获得主页面webview引用；
 				index = plus.webview.currentWebview().opener();
@@ -231,7 +296,7 @@
 			}
 
 			//点击“关闭侧滑菜单”按钮处理逻辑
-			document.getElementById("close-btn").addEventListener("tap", close);
+			//document.getElementById("close-btn").addEventListener("tap", close);
 
 			mui.init({
 				swipeBack: false,

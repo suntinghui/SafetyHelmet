@@ -9,7 +9,6 @@
   -webkit-font-smoothing: antialiased;
 }
 
-
 .icon-ly:before { content: "\e609"; }
 
 .icon-daiban:before { content: "\e614"; }
@@ -17,6 +16,8 @@
 .icon-zhongqingdianxinicon07:before { content: "\e627"; }
 
 .icon-daiban1:before { content: "\e601"; }
+
+.icon-guiji:before { content: "\e637"; }
 
 .icon-xianchang:before { content: "\e618"; }
 
@@ -45,6 +46,8 @@
 .icon-cebianlan:before { content: "\e615"; }
 
 .icon-anquanmao:before { content: "\e643"; }
+
+.icon-tuichu:before { content: "\e644"; }
 
 .icon-anquanmao1:before { content: "\e60d"; }
 

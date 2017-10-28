@@ -11,7 +11,6 @@
 		<link rel="stylesheet" href="../css/mui.min.css">
 		<link rel="stylesheet" href="../css/iconfont.css" />
 		<link rel="stylesheet" href="../css/oa.css" />
-
 	</head>
 
 	<body>
@@ -25,8 +24,12 @@
 				<span class="mui-tab-label">违规提醒</span>
 			</a>
 			<a class="mui-tab-item" id="helmetState.html" target="helmetState.html">
-				<span class="mui-icon iconfont icon-anquanmao"></span>
+				<span class="mui-icon iconfont icon-anquanmao1"></span>
 				<span class="mui-tab-label">安全帽一览</span>
+			</a>
+			<a class="mui-tab-item" id="trailList.html" target="trailList.html">
+				<span class="mui-icon iconfont icon-guiji"></span>
+				<span class="mui-tab-label">人员轨迹</span>
 			</a>
 		</nav>
 
@@ -37,7 +40,7 @@
 			mui.init();
 
 			// 解决软键盘弹出时底部元素上浮的问题  http://ask.dcloud.net.cn/article/12615
-			var subpages = ['fieldDistr.html','illegalReminder.html', 'helmetState.html'];
+			var subpages = ['fieldDistr.html','illegalReminder.html', 'helmetState.html', 'trailList.html'];
 			var subpage_style = {
 				top: '-51px',
 				bottom: '51px'
@@ -48,7 +51,7 @@
 			//创建子页面，首个选项卡页面显示，其它均隐藏；
 			mui.plusReady(function() {
 				var self = plus.webview.currentWebview();
-				for(var i = 0; i < 3; i++) {
+				for(var i = 0; i < 4; i++) {
 					var temp = {};
 					var sub = plus.webview.create(subpages[i], subpages[i], subpage_style);
 					if(i > 0) {
@@ -124,7 +127,6 @@
 		<script>
 			var aniShow = "pop-in";
 			var menu = null;
-			var	showMenu = false;
 			var isInTransition = false;
 			var _self;
 			var titleView;
@@ -456,7 +458,7 @@
 					}.bind(this)
 				)
 				
-				showMenu = true;
+				menuShow('1');
 			};
 			/**
 			 * 关闭菜单
@@ -483,7 +485,7 @@
 					}.bind(this)
 				)
 				
-				showMenu = false;
+				menuShow('0');
 			};
 			
 			window.addEventListener("menu:close", closeMenu);

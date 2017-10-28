@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>个人信息</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+
+		<style>
+			.mui-table-view-cell {
+				padding-top: 20px;
+				padding-bottom: 0px;
+			}
+			
+			.labelCon {
+				width: 30%;
+				border: none;
+			}
+			
+			.inputCon {
+				margin-bottom: 0px;
+				width: 70%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header id="header" class="mui-bar mui-bar-nav navbar">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left backbtn"></a>
+			<h1 id="title" class="mui-title">个人信息</h1>
+			<a id="save" class="mui-btn mui-btn-link mui-pull-right">保存</a>
+		</header>
+
+		<div class="mui-content">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<textarea class="mui-pull-left labelCon" readonly="readonly">姓名</textarea>
+					<textarea class="mui-pull-right inputCon" rows="1">王志亮</textarea>
+				</li>
+
+				<li class="mui-table-view-cell">
+					<textarea class="mui-pull-left labelCon" readonly="readonly">性别</textarea>
+					<textarea class="mui-pull-right inputCon" rows="1">男</textarea>
+				</li>
+			</ul>
+
+			<ul class="mui-table-view" style="margin-top: 20px;">
+				<li class="mui-table-view-cell">
+					<textarea class="mui-pull-left labelCon" readonly="readonly">手机号</textarea>
+					<textarea class="mui-pull-right inputCon" rows="1">18500972879</textarea>
+				</li>
+
+				<li class="mui-table-view-cell" style="padding-bottom: 20px;">
+					<textarea class="mui-pull-left labelCon" rows="3" readonly="readonly">地址</textarea>
+					<textarea class="mui-pull-right inputCon" rows="3">北京市朝阳区东四十条新中大厦408</textarea>
+				</li>
+			</ul>
+
+		</div>
+
+		<script src="../js/mui.min.js"></script>
+
+		<script type="text/javascript">
+			mui.init();
+			
+			document.getElementById('save').addEventListener('tap', function(){
+				mui.alert('保存成功', '提示', function() {
+					mui.back();
+				});
+			}, false);
+		</script>
+	</body>
+
+</html>

@@ -148,7 +148,7 @@
 							</div>
 						</a>
 					</li>
-					
+
 					<li class="mui-table-view-cell">
 						<a class="mui-navigate-right">
 							<img src="../img/head.jpg" class="headImg" style="width: 45px; position: fixed; right: 20px;" />
@@ -183,7 +183,7 @@
 							</div>
 						</a>
 					</li>
-					
+
 					<li class="mui-table-view-cell">
 						<a class="mui-navigate-right">
 							<img src="../img/head.jpg" class="headImg" style="width: 45px; position: fixed; right: 20px;" />
@@ -218,13 +218,15 @@
 							</div>
 						</a>
 					</li>
-					
+
 				</ul>
 			</div>
 
 		</div>
 
 		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/constants.js"></script>
+
 		<script type="text/javascript">
 			mui.init();
 
@@ -233,6 +235,11 @@
 			});
 
 			mui('#list').on('tap', 'li', function(e) {
+				if(menuState() == true) {
+					mui.fire(mui.currentWebview.opener(), "menu:close");
+					return;
+				}
+
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'showMyLocation.html',
