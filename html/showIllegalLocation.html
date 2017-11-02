@@ -1,45 +1,51 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 
 	<head>
-		<meta charset="UTF-8">
-		<title>摘脱位置</title>
-		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<link href="../css/mui.min.css" rel="stylesheet" />
+		<style type="text/css">
+			body,
+			html,
+			.mui-content,
+			#allmap {
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+				margin: 0;
+				font-family: "微软雅黑";
+			}
+		</style>
 
-		<link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css" />
-		<script src="http://webapi.amap.com/maps?v=1.3&key=9568d6f792af393dba669f1bc146cf83"></script>
-		<script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+		<title>违规位置</title>
 	</head>
 
 	<body>
 		<header id="header" class="mui-bar mui-bar-nav navbar">
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left backbtn"></a>
-			<h1 id="title" class="mui-title">摘脱位置</h1>
+			<h1 id="title" class="mui-title">违规位置</h1>
 		</header>
 
 		<div class="mui-content">
-			<div id="container"></div>
-
+			<div id="allmap"></div>
 		</div>
 
 		<script src="../js/mui.min.js"></script>
-		<script type="text/javascript">
-			mui.init();
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=x1C7K385dRjOuugisRHZuAkyoU9Cnm06"></script>
 
-			var map = new AMap.Map('container', {
-				resizeEnable: true,
-				center: [116.306271, 39.981818],
-				zoom: 13
-			});
-			var marker = new AMap.Marker({
-				position: map.getCenter(),
-				draggable: true,
-				cursor: 'move'
-			});
-			marker.setMap(map);
-			// 设置点标记的动画效果，此处为弹跳效果
-			marker.setAnimation('AMAP_ANIMATION_BOUNCE');
+		<script type="text/javascript">
+			mui.init()
+		</script>
+
+		<script type="text/javascript">
+			// 百度地图API功能
+			var map = new BMap.Map("allmap");
+			var point = new BMap.Point(116.312812, 39.988013);
+			map.centerAndZoom(point, 18);
+			var marker = new BMap.Marker(point); // 创建标注
+			map.addOverlay(marker); // 将标注添加到地图中
+			marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
 		</script>
 	</body>
 

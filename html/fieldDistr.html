@@ -7,16 +7,32 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link rel="stylesheet" href="../css/oa.css" />
-		<link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css" />
-		<style>
-			.info-tip {
-				position: absolute;
-				top: 10px;
-				right: 10px;
-				font-size: 12px;
-				background-color: #fff;
-				height: 35px;
-				text-align: left;
+
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+		<style type="text/css">
+			body,
+			html,
+			#allmap {
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+				margin: 0;
+				font-family: "微软雅黑";
+			}
+			
+			#l-map {
+				height: 100%;
+				width: 78%;
+				float: left;
+				border-right: 2px solid #bcbcbc;
+			}
+			
+			#r-result {
+				height: 100%;
+				width: 20%;
+				float: left;
 			}
 		</style>
 		<style>
@@ -108,7 +124,7 @@
 				<div id="item1" class="mui-control-content mui-active mui-card">
 					<div class="mui-scroll-wrapper scroll-content">
 
-						<div class="mui-scroll left-content" id="container">
+						<div class="mui-scroll left-content" id="allmap">
 						</div>
 					</div>
 				</div>
@@ -235,10 +251,8 @@
 		</div>
 
 		<script src="../js/mui.min.js"></script>
-		<script type="text/javascript" src="../js/constants.js" ></script>
-		<script src="http://cache.amap.com/lbs/static/es5.min.js"></script>
-		<script src="http://webapi.amap.com/maps?v=1.3&key=9568d6f792af393dba669f1bc146cf83"></script>
-		<script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+		<script type="text/javascript" src="../js/constants.js"></script>
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=x1C7K385dRjOuugisRHZuAkyoU9Cnm06"></script>
 
 		<script type="text/javascript">
 			mui.init();
@@ -246,8 +260,8 @@
 			mui('.scroll-content').scroll({
 				indicators: true //是否显示滚动条
 			});
-			
-			document.getElementById('helmetDetail').addEventListener('tap', function(){
+
+			document.getElementById('helmetDetail').addEventListener('tap', function() {
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'helmetDetail.html',
@@ -259,11 +273,11 @@
 			}, false);
 
 			mui('#list').on('tap', 'li', function(e) {
-				if (menuState() == true) {
+				if(menuState() == true) {
 					mui.fire(mui.currentWebview.opener(), "menu:close");
 					return;
 				}
-				
+
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'persionDetail.html',
@@ -276,45 +290,28 @@
 		</script>
 
 		<script>
-			var map = new AMap.Map('container', {
-				resizeEnable: true,
-				center: [116.312279, 39.981358],
-				zoom: 14
-			});
-			map.clearMap(); // 清除地图覆盖物
-			var markers = [{
-				icon: 'http://webapi.amap.com/theme/v1.3/markers/n/mark_b1.png',
-				position: [116.306356, 39.981786]
-			}, {
-				icon: 'http://webapi.amap.com/theme/v1.3/markers/n/mark_b2.png',
-				position: [116.304726, 39.979484]
-			}, {
-				icon: 'http://webapi.amap.com/theme/v1.3/markers/n/mark_b3.png',
-				position: [116.311978, 39.981588]
-			}, {
-				icon: 'http://webapi.amap.com/theme/v1.3/markers/n/mark_b4.png',
-				position: [116.316313, 39.983923]
-			}, {
-				icon: 'http://webapi.amap.com/theme/v1.3/markers/n/mark_b5.png',
-				position: [116.31185, 39.977642]
-			}];
-			// 添加一些分布不均的点到地图上,地图上添加三个点标记，作为参照
-			markers.forEach(function(marker) {
-				new AMap.Marker({
-					map: map,
-					icon: marker.icon,
-					position: [marker.position[0], marker.position[1]],
-					offset: new AMap.Pixel(-12, -36)
-				});
-			});
+			// 百度地图API功能
+			var map = new BMap.Map("allmap");
+			var point = new BMap.Point(116.312808, 39.987884);
+			map.centerAndZoom(point, 15);
+			// 编写自定义函数,创建标注
+			function addMarker(point) {
+				var marker = new BMap.Marker(point);
+				map.addOverlay(marker);
 
-			map.on('click', function(e) {
-				if (menuState() == true) {
+				marker.addEventListener("click", attribute);
+			}
+
+			// 点击事件
+			function attribute(e) {
+				//var p = e.target.getPosition(); //获取marker的位置
+				//alert("marker的位置是" + p.lng + "," + p.lat);
+
+				if(menuState() == true) {
 					mui.fire(mui.currentWebview.opener(), "menu:close");
 					return;
 				}
-				
-				//alert('您在[ ' + e.lnglat.getLng() + ',' + e.lnglat.getLat() + ' ]的位置点击了地图！');
+
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'persionDetail.html',
@@ -323,7 +320,18 @@
 						aniShow: 'pop-in'
 					},
 				});
-			});
+			}
+
+			// 随机向地图添加12个标注
+			var bounds = map.getBounds();
+			var sw = bounds.getSouthWest();
+			var ne = bounds.getNorthEast();
+			var lngSpan = Math.abs(sw.lng - ne.lng);
+			var latSpan = Math.abs(ne.lat - sw.lat);
+			for(var i = 0; i < 12; i++) {
+				var point = new BMap.Point(sw.lng + lngSpan * (Math.random() * 0.7), ne.lat - latSpan * (Math.random() * 0.7));
+				addMarker(point);
+			}
 		</script>
 	</body>
 

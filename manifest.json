@@ -80,9 +80,7 @@
             "description": "文件压缩与解压缩"
         },
         
-        "Maps": {
-            "description": "管理地图插件"
-        },
+        
         "Speech": {
             "description": "管理语音识别插件"
         },
