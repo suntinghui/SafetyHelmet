@@ -11,7 +11,8 @@
 		<style>
 			.mui-content {
 				height: 100%;
-				background-image: url(../img/home_bg.png);
+				background: url(../img/loginbg.jpg) no-repeat;
+				background-size: 100%;
 			}
 			
 			#topimg {
@@ -33,7 +34,7 @@
 				padding-top: 10px;
 				padding-bottom: 10px;
 				font-size: 17px;
-				background: steelblue;
+				background: #007FCA;
 			}
 			
 			.link-area {
@@ -116,8 +117,8 @@
 			};
 
 			loginBtn.addEventListener("tap", function(event) {
-				//loginReq();
-				openMainPage();
+				loginReq();
+				//openMainPage();
 			}, false);
 
 			var checkInput = function() {
@@ -145,8 +146,14 @@
 
 					var pushInfo = plus.push.getClientInfo();
 
-					var argus = "&loginName=" + userNameText.value + "&loginPwd=" + passwordText.value + "&deviceId=" + plus.device.uuid + "&clientid=" + pushInfo.clientid;
-					var url = getHost() + "Identity.ashx?Commond=AppLogin" + argus;
+					var arg = {
+						name: userNameText.value,
+						pwd: passwordText.value,
+						//deviceId:plus.device.uuid,
+						//clientid:pushInfo.clientid
+					}
+
+					var url = getHost() + "admin/login.action?arg=" + JSON.stringify(arg);
 					console.log(url);
 
 					mui.ajax(url, {
@@ -174,54 +181,30 @@
 			function responseLogin(resp) {
 				console.log('登录响应：' + JSON.stringify(resp));
 
-				switch(resp.LoginResult - 0) {
-					case 0:
-						// 保存用户信息
-						window.localStorage.setItem(TokenKey, resp.TokenKey);
-						window.localStorage.setItem(UserName, resp.UserName);
-						window.localStorage.setItem(LoginName, resp.LoginName);
+				if(resp.respMsgCode == '00') {
+					// 保存用户信息
+					window.localStorage.setItem(TokenKey, '');
+					window.localStorage.setItem(UserName, resp.username);
+					window.localStorage.setItem(AdminId, resp.admin.adminid);
+					window.localStorage.setItem(Name, resp.admin.name);
 
-						// 保存登录用户名
-						window.localStorage.setItem(SaveUserName, userNameText.value);
-						window.localStorage.setItem(CheckSavePwd, savepwd.checked);
-						window.localStorage.setItem(CheckAutoLogin, autologin.checked);
-						if(savepwd.checked) {
-							window.localStorage.setItem(SavePwd, passwordText.value);
-						} else {
-							window.localStorage.setItem(SavePwd, '');
-						}
+					// 保存登录用户名
+					window.localStorage.setItem(SaveUserName, userNameText.value);
+					window.localStorage.setItem(CheckSavePwd, savepwd.checked);
+					window.localStorage.setItem(CheckAutoLogin, autologin.checked);
+					
+					if(savepwd.checked) {
+						window.localStorage.setItem(SavePwd, passwordText.value);
+					} else {
+						window.localStorage.setItem(SavePwd, '');
+					}
 
-						openMainPage();
-
-						break;
-
-					case 1:
-						mui.alert("账户不存在", "提示", null);
-						break;
-
-					case 2:
-						mui.alert("密码错误", "提示", null);
-						break;
-
-					case 3:
-						mui.alert("没有移动办公权限", "提示", null);
-						break;
-
-					case 4:
-						mui.alert("无效的移动端设备", "提示", null);
-						break;
-
-					case 5:
-						mui.alert("设备与账号不匹配", "提示", null);
-						break;
-
-					case 6:
-						mui.alert("该设备已被禁用", "提示", null);
-						break;
-
-					default:
-						mui.alert("登录失败，未知异常", "提示", null);
-						break;
+					openMainPage();
+				} else if(resp.respMsgCode == '01') {
+					mui.alert("账号或密码错误", "提示", null);
+					
+				} else if(resp.respMsgCode == '04') {
+					mui.alert("该账户不可用", "提示", null);
 				}
 			}
 

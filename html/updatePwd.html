@@ -109,7 +109,7 @@
 					plus.nativeUI.showWaiting("正在加载...");
 				});
 
-				var url = getHost() + 'Identity.ashx?Commond=ChangePwd&LoginName=' + window.localStorage.getItem(LoginName) + '&HisPwd=' + oldPwdInput.value + '&newPwd=' + newPwdInput.value + '&tokenKey=' + window.localStorage.getItem(TokenKey);
+				var url = getHost() + 'Identity.ashx?Commond=ChangePwd&LoginName=' + window.localStorage.getItem(Name) + '&HisPwd=' + oldPwdInput.value + '&newPwd=' + newPwdInput.value + '&tokenKey=' + window.localStorage.getItem(TokenKey);
 				console.log(url);
 				mui.ajax(url, {
 					dataType: 'json', //服务器返回json格式数据

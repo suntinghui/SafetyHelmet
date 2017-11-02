@@ -109,6 +109,46 @@
 				}
 			});
 		</script>
+		
+		<script>
+			function requestHeadImg() {
+				checkNetwork();
+
+				mui.plusReady(function() {
+					var arg = {
+						adminId: window.localStorage.getItem(AdminId)
+					}
+
+					var url = getHost() + "admin/readPic.action?arg=" + JSON.stringify(arg);
+					console.log(url);
+
+					mui.ajax(url, {
+						dataType: 'json',
+						type: 'get',
+						timeout: TIMEOUT,
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						success: function(data) {
+							plus.nativeUI.closeWaiting();
+
+							responseHeadImg(data);
+						},
+						error: function(xhr, type, errorThrown) {
+							plus.nativeUI.closeWaiting();
+
+							mui.toast(getHttpErrorDesp(type));
+						}
+					});
+				});
+
+			} // end loginReq
+
+			function responseHeadImg(resp) {
+				console.log(resp);
+			}
+			
+		</script>
 
 		<script type="text/javascript">
 			function plusReady() {
@@ -173,6 +213,10 @@
 			mui.plusReady(function() {
 				//读取本地存储，检查是否为首次启动
 				var showGuide = plus.storage.getItem("lauchFlag");
+				
+				// STH
+				showGuide = true;
+				
 				//仅支持竖屏显示
 				plus.screen.lockOrientation("portrait-primary");
 				

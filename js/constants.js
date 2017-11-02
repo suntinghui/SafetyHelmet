@@ -1,5 +1,5 @@
 // http://103.43.185.166:8066/MobileOffice/
-var DEFAULT_HOST = '103.43.185.166:8066';
+var DEFAULT_HOST = 'http://tobefull.com/com-manage-web/';
 
 function getLocalStoreageHost() {
 	var host = window.localStorage.getItem(SET_HOST);
@@ -11,7 +11,7 @@ function getLocalStoreageHost() {
 
 function getHost() {
 	var host = getLocalStoreageHost();
-	return 'http://' + host + '/MobileOffice/';
+	return host;
 }
 
 // 是否正在显示侧边栏
@@ -36,7 +36,8 @@ var MAX_PAGE_SIZE = 19860727;
 // 下面是LocalStorage key
 var TokenKey = "TokenKey";
 var UserName = "UserName";
-var LoginName = "LoginName";
+var AdminId = 'AdminId';
+var Name = "Name";
 
 var SaveUserName = 'SaveUserName';
 var SavePwd = 'SavePwd';
