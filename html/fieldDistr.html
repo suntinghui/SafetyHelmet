@@ -114,7 +114,6 @@
 		<header id="header" class="mui-bar mui-bar-nav navbar">
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left backbtn" style="visibility: hidden;"></a>
 			<h1 id="title" class="mui-title">现场分布</h1>
-			<a class="mui-btn mui-btn-link mui-pull-right" id="helmetDetail">安全帽状态</a>
 		</header>
 
 		<div class="mui-content">
@@ -162,21 +161,14 @@
 				indicators: true //是否显示滚动条
 			});
 
-			document.getElementById('helmetDetail').addEventListener('tap', function() {
-				mui.openWindow({
-					id: Math.random() + '',
-					url: 'helmetDetail.html',
-					preload: true,
-					show: {
-						aniShow: 'pop-in'
-					},
-				});
-			}, false);
-
 			mui('#list').on('tap', 'li', function(e) {
 				if(menuState() == true) {
 					mui.fire(mui.currentWebview.opener(), "menu:close");
 					return;
+				}
+				
+				var extras = {
+					personUid: this.id,
 				}
 
 				mui.openWindow({
@@ -186,6 +178,7 @@
 					show: {
 						aniShow: 'pop-in'
 					},
+					extras: extras
 				});
 			});
 		</script>
@@ -252,7 +245,7 @@
 					var record = resp.dataList[i];
 					li = document.createElement('li');
 					li.className = 'mui-table-view-cell';
-					li.id = i + "";
+					li.id = record.personuid + "";
 
 					var a = document.createElement('a');
 					a.className = 'mui-navigate-right';

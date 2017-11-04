@@ -32,6 +32,10 @@
 			.filelink {
 				color: #6699FF;
 			}
+			
+			#list {
+				padding-right: 20px;
+			}
 		</style>
 	</head>
 
@@ -47,27 +51,27 @@
 					<img src="../img/head.jpg" class="headImg" style="width: 60px; position: fixed; right: 20px;" />
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">人员姓名</div>
-						<div class="item-value">王志亮</div>
+						<div id='fullname' class="item-value">王志亮</div>
 					</li>
 
-					<li class="mui-table-view-cell item-div" >
+					<li class="mui-table-view-cell item-div">
 						<div class="item-name">性别</div>
-						<div class="item-value">男</div>
+						<div id="gender" class="item-value">男</div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">身份证号</div>
-						<div class="item-value filelink" id="card">371425198606217310</div>
+						<div id="idno" class="item-value filelink">371425198606217310</div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">所属单位</div>
-						<div class="item-value">北京新世纪建筑有限公司</div>
+						<div id="institutionname" class="item-value">北京新世纪建筑有限公司</div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">工种</div>
-						<div class="item-value">高级焊工</div>
+						<div id="typeofworkname" class="item-value">高级焊工</div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
@@ -92,12 +96,12 @@
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">佩戴情况</div>
-						<div class="item-value">正常</div>
+						<div id="wearstatus" class="item-value">正常</div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">激活状态</div>
-						<div class="item-value">已激活</br>电量85%</br>GPS信号强</div>
+						<div id="state" class="item-value">已激活</br>电量85%</br>GPS信号强</div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
@@ -125,10 +129,15 @@
 		</div>
 
 		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/constants.js"></script>
+		<script type="text/javascript" src="../js/util.js"></script>
+		<script type="text/javascript" src="../js/view.js"></script>
+
 		<script type="text/javascript">
 			mui.init();
-			
-			document.getElementById('card').addEventListener('tap', function(){
+
+			// 查看身份证等照片
+			document.getElementById('idno').addEventListener('tap', function() {
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'showCardId.html',
@@ -139,6 +148,7 @@
 				});
 			}, false);
 
+			// 当前位置
 			document.getElementById('currentLocation').addEventListener('tap', function() {
 				mui.openWindow({
 					id: Math.random() + '',
@@ -150,6 +160,7 @@
 				});
 			}, false);
 
+			// 安全帽状态
 			document.getElementById('helmetDetail').addEventListener('tap', function() {
 				mui.openWindow({
 					id: Math.random() + '',
@@ -161,6 +172,7 @@
 				});
 			}, false);
 
+			// 历史轨迹
 			document.getElementById('historyTrail').addEventListener('tap', function() {
 				mui.openWindow({
 					id: Math.random() + '',
@@ -171,6 +183,66 @@
 					},
 				});
 			}, false);
+		</script>
+
+		<script>
+			var personUid = '';
+
+			window.onload = function() {
+				mui.plusReady(function() {
+					var self = plus.webview.currentWebview();
+					personUid = self.personUid;
+
+					requestDetail();
+				});
+			};
+
+			function requestDetail() {
+				checkNetwork();
+
+				mui.plusReady(function() {
+					plus.nativeUI.showWaiting("正在请求数据...");
+
+					var arg = {
+						channel: getChannel(),
+						personUid: personUid,
+					}
+
+					var url = getHost() + "personInfo/selectPersonalInfoByPersonId.action?arg=" + JSON.stringify(arg);
+					console.log(url);
+
+					mui.ajax(url, {
+						dataType: 'json',
+						type: 'get',
+						timeout: TIMEOUT,
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						success: function(data) {
+							plus.nativeUI.closeWaiting();
+
+							responseDetail(data.persons);
+						},
+						error: function(xhr, type, errorThrown) {
+							plus.nativeUI.closeWaiting();
+
+							mui.toast(getHttpErrorDesp(type));
+						}
+					});
+				});
+			}
+
+			function responseDetail(resp) {
+				document.getElementById('fullname').innerHTML = resp.fullname;
+				document.getElementById('gender').innerHTML = resp.gender;
+				document.getElementById('idno').innerHTML = resp.idno;
+				document.getElementById('institutionname').innerHTML = resp.institutionname;
+				document.getElementById('typeofworkname').innerHTML = resp.typeofworkname;
+				document.getElementById('wearstatus').innerHTML = resp.wearstatus == '0' ? '未穿戴' : '已穿戴';
+
+				var state = '已激活</br>电量' + resp.dumpenergy + '%</br>GPS信号:' + resp.netsignalstrength;
+				document.getElementById('state').innerHTML = state;
+			}
 		</script>
 	</body>
 
