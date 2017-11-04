@@ -278,8 +278,39 @@
 		<script>
 			// 百度地图API功能
 			var map = new BMap.Map("allmap");
-			var point = new BMap.Point(116.312808, 39.987884);
-			map.centerAndZoom(point, 15);
+			var point = new BMap.Point(116.332782, 40.007978);
+			map.centerAndZoom(point, 16);
+
+			// 瓦片
+			var tileLayer = new BMap.TileLayer({
+				isTransparentPng: true
+			});
+			tileLayer.getTilesUrl = function(tileCoord, zoom) {
+				var x = tileCoord.x;
+				var y = tileCoord.y;
+				var url = 'http://lbsyun.baidu.com/jsdemo/demo/tiles/' + zoom + '/tile' + x + '_' + y + '.png';
+				console.log(url);
+				return url; //根据当前坐标，选取合适的瓦片图
+			}
+
+			var copyCtrl = new BMap.CopyrightControl({
+				anchor: BMAP_ANCHOR_BOTTOM_RIGHT
+			});
+			copyCtrl.addCopyright({
+				id: 1,
+				content: "版权说明：清华校园图片取自互联网"
+			});
+			map.addControl(copyCtrl);
+
+			function add_control() {
+				map.addTileLayer(tileLayer);
+			}
+
+			function delete_control() {
+				map.removeTileLayer(tileLayer);
+			}
+			add_control();
+
 			// 编写自定义函数,创建标注
 			function addMarker(point) {
 				var marker = new BMap.Marker(point);

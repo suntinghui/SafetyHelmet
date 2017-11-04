@@ -118,14 +118,30 @@
 		</div>
 
 		<script type="text/javascript" src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/constants.js" ></script>
 
 		<script>
+			document.getElementById('name').innerHTML = window.localStorage.getItem(Name);
+			
 			document.getElementById('personInfo').addEventListener('tap', function() {
 				close();
 
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'personInfo.html',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+				});
+			}, false);
+			
+			document.getElementById('aboutUs').addEventListener('tap', function() {
+				close();
+
+				mui.openWindow({
+					id: Math.random() + '',
+					url: 'about_us.html',
 					preload: true,
 					show: {
 						aniShow: 'pop-in'
@@ -148,10 +164,6 @@
 
 			document.getElementById('checkUpdate').addEventListener('tap', function() {
 				mui.alert('当前已经是最新版本');
-			}, false);
-
-			document.getElementById('aboutUs').addEventListener('tap', function() {
-				mui.toast('关于我们');
 			}, false);
 
 			document.getElementById('close-btn').addEventListener('tap', function() {
