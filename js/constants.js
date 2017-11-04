@@ -14,6 +14,16 @@ function getHost() {
 	return host;
 }
 
+function getChannel() {
+	if (mui.os.android) {
+		return 'android';
+	} else if (mui.os.ios) {
+		return 'ios';
+	}
+	
+	return 'web';
+}
+
 // 是否正在显示侧边栏
 var	SHOWMENU = 'SHOWMENU';
 // open 1为打开， 0为关闭侧边栏

@@ -6,9 +6,10 @@
 		<title>违规提醒</title>
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../css/view.css" />
 
 		<style>
-			.item-div {
+			/*.item-div {
 				margin: 10px auto;
 				display: -webkit-box;
 				-webkit-box-pack: center;
@@ -27,11 +28,7 @@
 				width: 75%;
 				color: #333333;
 				font-size: 16px;
-			}
-			
-			.filelink {
-				color: #6699FF;
-			}
+			}*/
 		</style>
 	</head>
 
@@ -44,105 +41,16 @@
 		<div class="mui-content">
 			<div class="mui-scroll mui-card">
 				<ul class="mui-table-view" id="list">
-					<li class="mui-table-view-cell">
-						<a class="mui-navigate-right">
-							<img src="../img/head.jpg" class="headImg" style="width: 45px; position: fixed; right: 20px;" />
 
-							<div class="item-div">
-								<div class="item-name">人员姓名</div>
-								<div class="item-value">王志亮</div>
-							</div>
-							<div class="item-div">
-								<div class="item-name">性别</div>
-								<div class="item-value">男</div>
-							</div>
-							<div class="item-div">
-								<div class="item-name">身份证号</div>
-								<div class="item-value">371425198606217319</div>
-							</div>
-							<div class="item-div">
-								<div class="item-name">工种</div>
-								<div class="item-value">高级钳工</div>
-							</div>
-							<div class="item-div">
-								<div class="item-name">所属单位</div>
-								<div class="item-value">北京新世纪建筑有限公司</div>
-							</div>
-							<div class="item-div">
-								<div class="item-name">违规位置</div>
-								<div class="item-value filelink">点击查看地图信息</div>
-							</div>
-						</a>
-					</li>
-
-					<li class="mui-table-view-cell">
-						<a class="mui-navigate-right">
-							<img src="../img/head.jpg" class="headImg" style="width: 45px; position: fixed; right: 20px;" />
-
-							<div class="item-div">
-								<div class="item-name">人员姓名</div>
-								<div class="item-value">王志亮</div>
-							</div>
-							<div class="item-div">
-								<div class="item-name">性别</div>
-								<div class="item-value">男</div>
-							</div>
-							<div class="item-div">
-								<div class="item-name">身份证号</div>
-								<div class="item-value">371425198606217319</div>
-							</div>
-							<div class="item-div">
-								<div class="item-name">工种</div>
-								<div class="item-value">高级钳工</div>
-							</div>
-							<div class="item-div">
-								<div class="item-name">所属单位</div>
-								<div class="item-value">北京新世纪建筑有限公司</div>
-							</div>
-							<div class="item-div">
-								<div class="item-name">违规位置</div>
-								<div class="item-value filelink">点击查看地图信息</div>
-							</div>
-						</a>
-					</li>
-
-					<li class="mui-table-view-cell">
-						<a class="mui-navigate-right">
-							<img src="../img/head.jpg" class="headImg" style="width: 45px; position: fixed; right: 20px;" />
-
-							<div class="item-div">
-								<div class="item-name">人员姓名</div>
-								<div class="item-value">王志亮</div>
-							</div>
-							<div class="item-div">
-								<div class="item-name">性别</div>
-								<div class="item-value">男</div>
-							</div>
-							<div class="item-div">
-								<div class="item-name">身份证号</div>
-								<div class="item-value">371425198606217319</div>
-							</div>
-							<div class="item-div">
-								<div class="item-name">工种</div>
-								<div class="item-value">高级钳工</div>
-							</div>
-							<div class="item-div">
-								<div class="item-name">所属单位</div>
-								<div class="item-value">北京新世纪建筑有限公司</div>
-							</div>
-							<div class="item-div">
-								<div class="item-name">违规位置</div>
-								<div class="item-value filelink">点击查看地图信息</div>
-							</div>
-						</a>
-					</li>
 				</ul>
 			</div>
 
 		</div>
 
 		<script src="../js/mui.min.js"></script>
-		<script type="text/javascript" src="../js/constants.js" ></script>
+		<script type="text/javascript" src="../js/constants.js"></script>
+		<script type="text/javascript" src="../js/util.js" ></script>
+		<script type="text/javascript" src="../js/view.js" ></script>
 
 		<script type="text/javascript">
 			mui.init();
@@ -151,12 +59,94 @@
 				indicators: true //是否显示滚动条
 			});
 
+			window.onload = function() {
+				requestList();
+			};
+
+			function requestList() {
+				checkNetwork();
+
+				mui.plusReady(function() {
+					plus.nativeUI.showWaiting("正在请求数据...");
+
+					var arg = {
+						channel: getChannel(),
+						wearstatus: '',
+						page: '1',
+						pageCount: MAX_PAGE_SIZE,
+					}
+
+					var url = getHost() + "personInfo/selectViolationPerson.action?arg=" + JSON.stringify(arg);
+					console.log(url);
+
+					mui.ajax(url, {
+						dataType: 'json',
+						type: 'get',
+						timeout: TIMEOUT,
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						success: function(data) {
+							plus.nativeUI.closeWaiting();
+
+							responseList(data);
+						},
+						error: function(xhr, type, errorThrown) {
+							plus.nativeUI.closeWaiting();
+
+							mui.toast(getHttpErrorDesp(type));
+						}
+					});
+				});
+			}
+
+			function responseList(resp) {
+				if(resp.respMsgCode != '00') {
+					mui.alert(resp.respMSG);
+					return;
+				}
+
+				var list = document.getElementById("list");
+				// 首先清空下面的所有结点
+				while(list.hasChildNodes()) {
+					list.removeChild(list.firstChild);
+				}
+				// 开始添加新的节点
+				var fragment = document.createDocumentFragment();
+				var li;
+				for(var i = 0; i < resp.dataList.length; i++) {
+					var record = resp.dataList[i];
+					li = document.createElement('li');
+					li.className = 'mui-table-view-cell';
+					li.id = i + "";
+
+					var a = document.createElement('a');
+					a.className = 'mui-navigate-right';
+
+					var img = document.createElement('img');
+					img.src = '';
+					img.className = 'headImg';
+					a.appendChild(img);
+
+					a.appendChild(createInfoItem('人员姓名', record.fullname));
+					a.appendChild(createInfoItem('性别', record.gender));
+					a.appendChild(createInfoItem('身份证号', record.idno));
+					a.appendChild(createInfoItem('工种', record.idno));
+					a.appendChild(createInfoItem('所属单位', record.institutionname));
+					a.appendChild(createInfoItem('违规位置', '点击查看地图信息', 'filelink'));
+
+					li.appendChild(a);
+					fragment.appendChild(li);
+				}
+				list.appendChild(fragment);
+			}
+
 			mui('#list').on('tap', 'li', function(e) {
-				if (menuState() == true) {
+				if(menuState() == true) {
 					mui.fire(mui.currentWebview.opener(), "menu:close");
 					return;
 				}
-				
+
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'showIllegalLocation.html',

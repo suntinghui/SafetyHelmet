@@ -6,6 +6,7 @@
 		<title>安全帽状态</title>
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../css/view.css" />
 
 		<style>
 			.item-div {
@@ -44,120 +45,101 @@
 		<div class="mui-content">
 			<div class="mui-scroll mui-card">
 				<ul class="mui-table-view" id="list">
-					<li class="mui-table-view-cell">
-						<a class="mui-navigate-right">
-							<div class="item-div other">
-								<div class="item-name">帽子型号</div>
-								<div class="item-value">DZ102938-9</div>
-							</div>
-							<div class="item-div other">
-								<div class="item-name">穿戴状态</div>
-								<div class="item-value">正常</div>
-							</div>
-							<div class="item-div other">
-								<div class="item-name">穿戴人</div>
-								<div class="item-value">王志亮</div>
-							</div>
-							<div class="item-div currentLocation">
-								<div class="item-name">实时位置</div>
-								<div class="item-value filelink">点击查看</div>
-							</div>
-							<div class="item-div other">
-								<div class="item-name">剩余电量</div>
-								<div class="item-value redhat">85%</div>
-							</div>
-						</a>
-					</li>
-
-					<li class="mui-table-view-cell">
-						<a class="mui-navigate-right">
-							<div class="item-div other">
-								<div class="item-name">帽子型号</div>
-								<div class="item-value">DZ102938-9</div>
-							</div>
-							<div class="item-div other">
-								<div class="item-name">穿戴状态</div>
-								<div class="item-value">正常</div>
-							</div>
-							<div class="item-div other">
-								<div class="item-name">穿戴人</div>
-								<div class="item-value">王志亮</div>
-							</div>
-							<div class="item-div currentLocation">
-								<div class="item-name">实时位置</div>
-								<div class="item-value filelink">点击查看</div>
-							</div>
-							<div class="item-div other">
-								<div class="item-name">剩余电量</div>
-								<div class="item-value redhat">85%</div>
-							</div>
-						</a>
-					</li>
-
-					<li class="mui-table-view-cell">
-						<a class="mui-navigate-right">
-							<div class="item-div other">
-								<div class="item-name">帽子型号</div>
-								<div class="item-value">DZ102938-9</div>
-							</div>
-							<div class="item-div other">
-								<div class="item-name">穿戴状态</div>
-								<div class="item-value">正常</div>
-							</div>
-							<div class="item-div other">
-								<div class="item-name">穿戴人</div>
-								<div class="item-value">王志亮</div>
-							</div>
-							<div class="item-div currentLocation">
-								<div class="item-name">实时位置</div>
-								<div class="item-value filelink">点击查看</div>
-							</div>
-							<div class="item-div other">
-								<div class="item-name">剩余电量</div>
-								<div class="item-value redhat">85%</div>
-							</div>
-						</a>
-					</li>
-
-					<li class="mui-table-view-cell">
-						<a class="mui-navigate-right">
-							<div class="item-div other">
-								<div class="item-name">帽子型号</div>
-								<div class="item-value">DZ102938-9</div>
-							</div>
-							<div class="item-div other">
-								<div class="item-name">穿戴状态</div>
-								<div class="item-value">正常</div>
-							</div>
-							<div class="item-div other">
-								<div class="item-name">穿戴人</div>
-								<div class="item-value">王志亮</div>
-							</div>
-							<div class="item-div currentLocation">
-								<div class="item-name">实时位置</div>
-								<div class="item-value filelink">点击查看</div>
-							</div>
-							<div class="item-div other">
-								<div class="item-name">剩余电量</div>
-								<div class="item-value redhat">85%</div>
-							</div>
-						</a>
-					</li>
-
 				</ul>
 			</div>
 
 		</div>
 
 		<script src="../js/mui.min.js"></script>
-		<script type="text/javascript" src="../js/constants.js" ></script>
-		
+		<script type="text/javascript" src="../js/constants.js"></script>
+		<script type="text/javascript" src="../js/util.js"></script>
+		<script type="text/javascript" src="../js/view.js"></script>
+
 		<script type="text/javascript">
 			mui.init();
 
 			mui('.scroll-content').scroll({
 				indicators: true //是否显示滚动条
 			});
+
+			window.onload = function() {
+				requestList();
+			};
+
+			function requestList() {
+				checkNetwork();
+
+				mui.plusReady(function() {
+					plus.nativeUI.showWaiting("正在请求数据...");
+
+					var arg = {
+						channel: getChannel(),
+						page: '1',
+						pageCount: MAX_PAGE_SIZE,
+						fullName: '',
+						helmetColor: '',
+						helmetType: '',
+						wearStatus: '',
+					}
+
+					var url = getHost() + "helmetInfo/selectAqmMsg.action?arg=" + JSON.stringify(arg);
+					console.log(url);
+
+					mui.ajax(url, {
+						dataType: 'json',
+						type: 'get',
+						timeout: TIMEOUT,
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						success: function(data) {
+							plus.nativeUI.closeWaiting();
+
+							responseList(data);
+						},
+						error: function(xhr, type, errorThrown) {
+							plus.nativeUI.closeWaiting();
+
+							mui.toast(getHttpErrorDesp(type));
+						}
+					});
+				});
+			}
+
+			function responseList(resp) {
+				if(resp.respMsgCode != '00') {
+					mui.alert(resp.respMSG);
+					return;
+				}
+
+				var list = document.getElementById("list");
+				// 首先清空下面的所有结点
+				while(list.hasChildNodes()) {
+					list.removeChild(list.firstChild);
+				}
+				// 开始添加新的节点
+				var fragment = document.createDocumentFragment();
+				var li;
+				for(var i = 0; i < resp.dataList.length; i++) {
+					var record = resp.dataList[i];
+					li = document.createElement('li');
+					li.className = 'mui-table-view-cell';
+					li.id = i + "";
+
+					var a = document.createElement('a');
+					a.className = 'mui-navigate-right';
+
+					a.appendChild(createInfoItem('帽子型号', record.helmettype, 'other'));
+					a.appendChild(createInfoItem('穿戴状态', (record.wearstatus == '0' ? '未穿戴' : '已穿戴'), 'other'));
+					a.appendChild(createInfoItem('穿戴人', record.fullname, 'other'));
+					a.appendChild(createInfoItem('实时位置', '点击查看', 'filelink currentLocation'));
+					a.appendChild(createInfoItem('剩余电量', record.dumpenergy + '%', 'other'));
+
+					li.appendChild(a);
+					fragment.appendChild(li);
+				}
+				list.appendChild(fragment);
+			}
 
 			mui('#list').on('tap', '.currentLocation', function(e) {
 				mui.openWindow({
@@ -171,11 +153,11 @@
 			});
 
 			mui('#list').on('tap', '.other', function(e) {
-				if (menuState() == true) {
+				if(menuState() == true) {
 					mui.fire(mui.currentWebview.opener(), "menu:close");
 					return;
 				}
-				
+
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'helmetDetail.html',

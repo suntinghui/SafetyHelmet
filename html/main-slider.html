@@ -90,7 +90,7 @@
 	<body>
 		<div class="mui-content">
 			<div id="headDiv">
-				<img src="../img/head.jpg" id="headImg" />
+				<img src="../img/head.png" id="headImg" onerror="this.onerror='';this.src='../img/head_placehold.JPG'" />
 			</div>
 			<div id="name">王志亮</div>
 
@@ -122,7 +122,7 @@
 		<script>
 			document.getElementById('personInfo').addEventListener('tap', function() {
 				close();
-				
+
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'personInfo.html',
@@ -135,7 +135,7 @@
 
 			document.getElementById('updatePwd').addEventListener('tap', function() {
 				close();
-				
+
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'updatePwd.html',
@@ -157,31 +157,8 @@
 			document.getElementById('close-btn').addEventListener('tap', function() {
 				close();
 
-				mui.confirm('您确定要注销登录吗？', '提示', ['取消', '确认'], function(e) {
-					if(e.index == 1) {
-						logout();
-					}
-				});
+				mui.fire(mui.currentWebview.opener(), "logout");
 			}, false);
-
-			function logout() {
-				mui.plusReady(function() {
-					// 获取所有Webview窗口
-					var curr = plus.webview.currentWebview();
-					var wvs = plus.webview.all();
-					for(var i = 0, len = wvs.length; i < len; i++) {
-						//关闭除setting页面外的其他页面
-						if(wvs[i].getURL() == curr.getURL())
-							continue;
-						plus.webview.close(wvs[i]);
-					}
-					//打开login页面后再关闭
-					plus.webview.open('login.html');
-					curr.close();
-
-					mui.toast("已退出登录");
-				});
-			}
 		</script>
 
 		<script type="text/javascript" charset="utf-8">
@@ -195,8 +172,8 @@
 			}
 
 			var subWebview = null;
-			var	template = null;
-			var	index = null;
+			var template = null;
+			var index = null;
 			mui.plusReady(function() {
 				//获得主页面webview引用；
 				index = plus.webview.currentWebview().opener();

@@ -6,12 +6,12 @@
 		<title>安全帽</title>
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../css/mui.min.css" rel="stylesheet" />
-		<link rel="stylesheet" href="../css/oa.css" />
+		<link rel="stylesheet" href="../css/view.css" />
 
 		<style>
 			.mui-content {
 				height: 100%;
-				background: url(../img/loginbg.jpg) no-repeat;
+				background: url(../img/login.jpg);
 				background-size: 100%;
 			}
 			
@@ -118,7 +118,7 @@
 
 			loginBtn.addEventListener("tap", function(event) {
 				loginReq();
-//				openMainPage();
+				//openMainPage();
 			}, false);
 
 			var checkInput = function() {
@@ -149,6 +149,7 @@
 					var arg = {
 						name: userNameText.value,
 						pwd: passwordText.value,
+						channel: getChannel(),
 						//deviceId:plus.device.uuid,
 						//clientid:pushInfo.clientid
 					}
@@ -192,7 +193,7 @@
 					window.localStorage.setItem(SaveUserName, userNameText.value);
 					window.localStorage.setItem(CheckSavePwd, savepwd.checked);
 					window.localStorage.setItem(CheckAutoLogin, autologin.checked);
-					
+
 					if(savepwd.checked) {
 						window.localStorage.setItem(SavePwd, passwordText.value);
 					} else {
@@ -200,11 +201,9 @@
 					}
 
 					openMainPage();
-				} else if(resp.respMsgCode == '01') {
-					mui.alert("账号或密码错误", "提示", null);
-					
-				} else if(resp.respMsgCode == '04') {
-					mui.alert("该账户不可用", "提示", null);
+
+				} else {
+					mui.alert(resp.respMSG);
 				}
 			}
 
