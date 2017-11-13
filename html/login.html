@@ -9,10 +9,14 @@
 		<link rel="stylesheet" href="../css/view.css" />
 
 		<style>
-			.mui-content {
+			body {
 				height: 100%;
-				background: url(../img/login.jpg);
-				background-size: 100% 150%;
+				background: url(../img/loginbg.png);
+			}
+			
+			.mui-content {
+				padding-top: 15%;
+				background: #00000000;
 			}
 			
 			#topimg {
@@ -21,10 +25,10 @@
 			}
 			
 			#contentDiv {
-				background-color: rgba(255, 255, 255, 0.95);
+				background-color: rgba(255, 255, 255, 0);
 				padding: 3% 3% 15% 0%;
-				margin: auto 3%;
-				border: 2px solid;
+				margin: 7% 3%;
+				border: 0px solid;
 				border-color: #FFFFFF;
 				border-radius: 10px;
 			}
@@ -52,7 +56,12 @@
 	</head>
 
 	<body>
-		<div class="mui-content" style="padding-top: 35%;">
+		<div class="mui-content" >
+
+			<div style="text-align: center; margin:0 auto;">
+				<img src="../img/login_head.png" style="width: 25%;" /><br />
+				<img src="../img/login_anquan.jpg" style="width: 30%;" />
+			</div>
 
 			<div id="contentDiv">
 				<div class="mui-input-row">
@@ -75,9 +84,8 @@
 						<input name="savepwd" value="savepwd" type="checkbox" id="savepwd">
 					</div>
 
-					<div class="mui-checkbox mui-left" style="float: right;" id="autologinDiv">
-						<label style="color: black; margin-top: 5px; font-size: 16px;font-family: '微软雅黑';">自动登录</label>
-						<input name="autologin" value="autologin" type="checkbox" id="autologin">
+					<div class="mui-checkbox mui-left" style="float: right;" id="forgetPwdDiv">
+						<label id="forgetPwd" style="color: dodgerblue; margin-top: 5px; font-size: 16px;font-family: '微软雅黑';">忘记密码？</label>
 					</div>
 
 				</div>
@@ -100,25 +108,20 @@
 			var passwordText = document.getElementById("passwordText");
 			var savepwdDiv = document.getElementById('savepwdDiv');
 			var savepwd = document.getElementById('savepwd');
-			var autologinDiv = document.getElementById('autologinDiv');
-			var autologin = document.getElementById('autologin');
+			var forgetPwdDiv = document.getElementById('forgetPwdDiv');
 			var loginBtn = document.getElementById("loginBtn");
 
 			// 初始化参数 
 			userNameText.value = window.localStorage.getItem(SaveUserName);
 			passwordText.value = window.localStorage.getItem(SavePwd);
-			autoLoginCheck(window.localStorage.getItem(CheckAutoLogin) == 'true');
 			savepwd.checked = (window.localStorage.getItem(CheckSavePwd) == 'true');
-
-			window.onload = function() {
-				if(window.localStorage.getItem(CheckAutoLogin) == 'true') {
-					window.setTimeout(loginReq, 2000);
-				}
-			};
 
 			loginBtn.addEventListener("tap", function(event) {
 				loginReq();
 				//openMainPage();
+			}, false);
+			
+			forgetPwdDiv.addEventListener('tap', function(){
 			}, false);
 
 			var checkInput = function() {
@@ -192,7 +195,6 @@
 					// 保存登录用户名
 					window.localStorage.setItem(SaveUserName, userNameText.value);
 					window.localStorage.setItem(CheckSavePwd, savepwd.checked);
-					window.localStorage.setItem(CheckAutoLogin, autologin.checked);
 
 					if(savepwd.checked) {
 						window.localStorage.setItem(SavePwd, passwordText.value);
@@ -218,48 +220,8 @@
 					bottom: '0px'
 				});
 				nw.show();
-
-				/*
-				var extras = {
-					'navigationbar': {
-						'backgroundcolor': '#f7f7f7',
-						'titletext': '标题',
-						'titlecolor': '#000000'
-					}
-				};
-
-				mui.openWindow({
-					url: 'main_tab.html',
-					id: "main_tab.html", // 该id在刷新上有使用，不可更改
-					preload: true,
-					show: {
-						aniShow: 'pop-in'
-					},
-					waiting: {
-						autoShow: true, //自动显示等待框，默认为true
-						title: '正在登录...',
-					},
-					extras: extras
-				});
-				*/
 			}
 
-			mui('#autologinDiv').on('change', 'input', function() {
-				autoLoginCheck(this.checked);
-			});
-
-			function autoLoginCheck(checked) {
-				savepwd.checked = checked;
-				autologin.checked = checked;
-
-				if(checked) {
-					savepwd.disabled = 'disabled';
-					savepwdDiv.classList.add('mui-disabled');
-				} else {
-					savepwd.disabled = '';
-					savepwdDiv.classList.remove('mui-disabled');
-				}
-			};
 		</script>
 
 	</body>

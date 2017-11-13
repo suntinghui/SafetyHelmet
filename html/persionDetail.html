@@ -36,6 +36,17 @@
 			#list {
 				padding-right: 20px;
 			}
+			
+			#headImg {
+				width: 60px;
+				position: fixed;
+				right: 20px;
+				margin: 10px;
+			}
+			
+			.forHeadImg:after {
+				right: 100px;
+			}
 		</style>
 	</head>
 
@@ -48,55 +59,57 @@
 		<div class="mui-content">
 			<div class="mui-scroll mui-card">
 				<ul class="mui-table-view" id="list">
-					<img src="../img/head.jpg" class="headImg" style="width: 60px; position: fixed; right: 20px;" />
-					<li class="mui-table-view-cell item-div">
+
+					<img id="headImg" src="" class="headImg" />
+
+					<li class="mui-table-view-cell item-div forHeadImg" style="width: 90%;">
 						<div class="item-name">人员姓名</div>
-						<div id='fullname' class="item-value">王志亮</div>
+						<div id='fullname' class="item-value"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">性别</div>
-						<div id="gender" class="item-value">男</div>
+						<div id="gender" class="item-value"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">身份证号</div>
-						<div id="idno" class="item-value filelink">371425198606217310</div>
+						<div id="idno" class="item-value filelink"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">所属单位</div>
-						<div id="institutionname" class="item-value">北京新世纪建筑有限公司</div>
+						<div id="institutionname" class="item-value"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">工种</div>
-						<div id="typeofworkname" class="item-value">高级焊工</div>
+						<div id="typeofworkname" class="item-value"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">组别</div>
-						<div class="item-value">工程三组</div>
+						<div class="item-value"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">注册时间</div>
-						<div class="item-value">2017年8月29日 12:22</div>
+						<div id="regTime" class="item-value"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">进场时间</div>
-						<div class="item-value">2017年9月8日 12:20:10</div>
+						<div id="enterTime" class="item-value"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">离场时间</div>
-						<div class="item-value">2017年9月11日 10:30:50</div>
+						<div id="leaveTime" class="item-value"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">佩戴情况</div>
-						<div id="wearstatus" class="item-value">正常</div>
+						<div id="wearstatus" class="item-value"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
@@ -136,8 +149,11 @@
 		<script type="text/javascript">
 			mui.init();
 
+			var personUid = '';
+
 			// 查看身份证等照片
 			document.getElementById('idno').addEventListener('tap', function() {
+
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'showCardId.html',
@@ -145,6 +161,9 @@
 					show: {
 						aniShow: 'pop-in'
 					},
+					extras: {
+						personUid: personUid
+					}
 				});
 			}, false);
 
@@ -186,8 +205,6 @@
 		</script>
 
 		<script>
-			var personUid = '';
-
 			window.onload = function() {
 				mui.plusReady(function() {
 					var self = plus.webview.currentWebview();
@@ -221,7 +238,7 @@
 						success: function(data) {
 							plus.nativeUI.closeWaiting();
 
-							responseDetail(data.persons);
+							responseDetail(data.person);
 						},
 						error: function(xhr, type, errorThrown) {
 							plus.nativeUI.closeWaiting();
@@ -233,11 +250,16 @@
 			}
 
 			function responseDetail(resp) {
+				document.getElementById('headImg').src = resp.pictureUrl;
+
 				document.getElementById('fullname').innerHTML = resp.fullname;
 				document.getElementById('gender').innerHTML = resp.gender;
 				document.getElementById('idno').innerHTML = resp.idno;
 				document.getElementById('institutionname').innerHTML = resp.institutionname;
 				document.getElementById('typeofworkname').innerHTML = resp.typeofworkname;
+				document.getElementById('enterTime').innerHTML = resp.enterTime;
+				document.getElementById('regTime').innerHTML = resp.regTime;
+				document.getElementById('leaveTime').innerHTML = resp.leaveTime;
 				document.getElementById('wearstatus').innerHTML = resp.wearstatus == '0' ? '未穿戴' : '已穿戴';
 
 				var state = '已激活</br>电量' + resp.dumpenergy + '%</br>GPS信号:' + resp.netsignalstrength;

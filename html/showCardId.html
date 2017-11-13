@@ -37,8 +37,57 @@
 		</div>
 
 		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/constants.js" ></script>
+		<script type="text/javascript" src="../js/util.js" ></script>
+		<script type="text/javascript" src="../js/view.js" ></script>
+		<script type="text/javascript" src="../js/parse.js" ></script>
+		
 		<script type="text/javascript">
-			mui.init()
+			mui.init();
+
+			var personId;
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				personId = self.personUid;
+				
+				requestImg();
+			});
+
+			function requestImg() {
+				plus.nativeUI.showWaiting("正在查询...");
+
+				var arg = {
+					personId: personId,
+					channel: getChannel()
+				}
+
+				var url = getHost() + "image/selectIDCard.action?arg=" + JSON.stringify(arg);
+				console.log(url);
+
+				mui.ajax(url, {
+					dataType: 'json',
+					type: 'get',
+					timeout: TIMEOUT,
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					success: function(data) {
+						plus.nativeUI.closeWaiting();
+
+						responseImage(data);
+					},
+					error: function(xhr, type, errorThrown) {
+						plus.nativeUI.closeWaiting();
+
+						mui.toast(getHttpErrorDesp(type));
+					}
+				});
+			}
+			
+			function responseImage(resp) {
+				
+			}
 		</script>
 	</body>
 

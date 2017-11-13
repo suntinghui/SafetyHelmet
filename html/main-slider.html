@@ -118,11 +118,17 @@
 		</div>
 
 		<script type="text/javascript" src="../js/mui.min.js"></script>
-		<script type="text/javascript" src="../js/constants.js" ></script>
+		<script type="text/javascript" src="../js/constants.js"></script>
+		<script type="text/javascript" src="../js/util.js" ></script>
+		<script type="text/javascript" src="../js/view.js" ></script>
 
 		<script>
-			document.getElementById('name').innerHTML = window.localStorage.getItem(Name);
+			window.onload = function(){
+				requestHeadImg();
+			};
 			
+			document.getElementById('name').innerHTML = window.localStorage.getItem(Name);
+
 			document.getElementById('personInfo').addEventListener('tap', function() {
 				close();
 
@@ -135,7 +141,7 @@
 					},
 				});
 			}, false);
-			
+
 			document.getElementById('aboutUs').addEventListener('tap', function() {
 				close();
 
@@ -171,6 +177,34 @@
 
 				mui.fire(mui.currentWebview.opener(), "logout");
 			}, false);
+
+			function requestHeadImg() {
+				var arg = {
+					adminId: window.localStorage.getItem(AdminId),
+				}
+
+				var url = getHost() + "admin/readPic.action?arg=" + JSON.stringify(arg);
+				console.log(url);
+
+				mui.ajax(url, {
+					dataType: 'json',
+					type: 'get',
+					timeout: TIMEOUT,
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					success: function(data) {
+						plus.nativeUI.closeWaiting();
+
+						responseLogin(data);
+					},
+					error: function(xhr, type, errorThrown) {
+						plus.nativeUI.closeWaiting();
+
+						mui.toast(getHttpErrorDesp(type));
+					}
+				});
+			}
 		</script>
 
 		<script type="text/javascript" charset="utf-8">
