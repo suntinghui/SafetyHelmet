@@ -7,29 +7,7 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link rel="stylesheet" href="../css/view.css" />
-
-		<style>
-			/*.item-div {
-				margin: 10px auto;
-				display: -webkit-box;
-				-webkit-box-pack: center;
-				-webkit-box-align: center;
-			}
-			
-			.item-name {
-				width: 25%;
-				color: #666666;
-				font-size: 16px;
-				text-align: right;
-			}
-			
-			.item-value {
-				margin-left: 20px;
-				width: 75%;
-				color: #333333;
-				font-size: 16px;
-			}*/
-		</style>
+		<link rel="stylesheet" href="../css/pullrefresh.css" />
 	</head>
 
 	<body>
@@ -39,31 +17,74 @@
 		</header>
 
 		<div class="mui-content">
-			<div class="mui-scroll mui-card">
-				<ul class="mui-table-view" id="list">
-
-				</ul>
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll" id="newPullrefresh">
+					<div id="nodata1" style="margin-top: 30px; display: none; text-align: center;">
+						<img src="../img/nodata.png" style="width: 150px; height: 150px;" />
+					</div>
+					<ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" id="newList" style="margin-top: 51px;">
+					</ul>
+				</div>
 			</div>
 
 		</div>
 
 		<script src="../js/mui.min.js"></script>
 		<script type="text/javascript" src="../js/constants.js"></script>
-		<script type="text/javascript" src="../js/util.js" ></script>
-		<script type="text/javascript" src="../js/view.js" ></script>
+		<script type="text/javascript" src="../js/util.js"></script>
+		<script type="text/javascript" src="../js/view.js"></script>
+		<script src="../js/mui.pullToRefresh.js"></script>
+		<script src="../js/mui.pullToRefresh.material.js"></script>
 
 		<script type="text/javascript">
 			mui.init();
 
-			mui('.scroll-content').scroll({
-				indicators: true //是否显示滚动条
-			});
+			var newPullupRefresh = null;
+			var newPulldownRefresh = null;
 
-			window.onload = function() {
-				requestList();
-			};
+			(function($) {
+				//阻尼系数
+				var deceleration = mui.os.ios ? 0.003 : 0.0009;
+				$('.mui-scroll-wrapper').scroll({
+					bounce: false,
+					indicators: true, //是否显示滚动条
+					deceleration: deceleration
+				});
 
-			function requestList() {
+				$.ready(function() {
+					$('#newPullrefresh').pullToRefresh({
+						down: {
+							callback: function() {
+								newPulldownRefresh = this;
+
+								var list = document.getElementById("newList");
+								// 首先清空下面的所有结点
+								while(list.hasChildNodes()) {
+									list.removeChild(list.firstChild);
+								}
+
+								newCurrentPage = 1;
+								requestNewList();
+							}
+						},
+						up: {
+							auto: true,
+							callback: function() {
+								newPullupRefresh = this;
+
+								newCurrentPage++;
+								requestNewList();
+							}
+						}
+					});
+
+				});
+			})(mui);
+
+			var newCurrentPage = 0; // 当前页码
+			var newTotalPages = 1; // 总页数
+
+			function requestNewList() {
 				checkNetwork();
 
 				mui.plusReady(function() {
@@ -72,8 +93,8 @@
 					var arg = {
 						channel: getChannel(),
 						wearstatus: '',
-						page: '1',
-						pageCount: MAX_PAGE_SIZE,
+						page: newCurrentPage,
+						pageCount: PAGE_SIZE,
 					}
 
 					var url = getHost() + "personInfo/selectViolationPerson.action?arg=" + JSON.stringify(arg);
@@ -89,7 +110,7 @@
 						success: function(data) {
 							plus.nativeUI.closeWaiting();
 
-							responseList(data);
+							responseNewList(data);
 						},
 						error: function(xhr, type, errorThrown) {
 							plus.nativeUI.closeWaiting();
@@ -100,13 +121,29 @@
 				});
 			}
 
-			function responseList(resp) {
+			function responseNewList(resp) {
 				if(resp.respMsgCode != '00') {
 					mui.alert(resp.respMSG);
 					return;
 				}
 
-				var list = document.getElementById("list");
+				mui.fire(mui.currentWebview.opener(), 'reminder', {
+					count: resp.dataList.length
+				});
+
+				if(resp.dataList.length == 0) {
+					document.getElementById('nodata1').style.display = 'block';
+					document.getElementById('newList').style.display = 'none';
+					newPullupRefresh.pullUpTips.style.display = 'none';
+					return;
+				}
+
+				document.getElementById('nodata1').style.display = 'none';
+				document.getElementById('newList').style.display = 'block';
+
+				newTotalPages = Math.ceil(resp.totalSize / PAGE_SIZE);
+
+				var list = document.getElementById("newList");
 				// 首先清空下面的所有结点
 				while(list.hasChildNodes()) {
 					list.removeChild(list.firstChild);
@@ -124,14 +161,14 @@
 					a.className = 'mui-navigate-right';
 
 					var img = document.createElement('img');
-					img.src = '';
+					img.src = record.pictureUrl;
 					img.className = 'headImg';
 					a.appendChild(img);
 
 					a.appendChild(createInfoItem('人员姓名', record.fullname));
-					a.appendChild(createInfoItem('性别', record.gender));
+					a.appendChild(createInfoItem('性别', (record.gender == '0' ? '男' : '女')));
 					a.appendChild(createInfoItem('身份证号', record.idno));
-					a.appendChild(createInfoItem('工种', record.idno));
+					a.appendChild(createInfoItem('工种', record.typeofworkname));
 					a.appendChild(createInfoItem('所属单位', record.institutionname));
 					a.appendChild(createInfoItem('违规位置', '点击查看地图信息', 'filelink'));
 
@@ -139,9 +176,17 @@
 					fragment.appendChild(li);
 				}
 				list.appendChild(fragment);
+
+				if(newPulldownRefresh != null) {
+					newPulldownRefresh.endPullDownToRefresh();
+				}
+
+				if(newPullupRefresh != null) {
+					newPullupRefresh.endPullUpToRefresh((newCurrentPage >= newTotalPages));
+				}
 			}
 
-			mui('#list').on('tap', 'li', function(e) {
+			mui('#newList').on('tap', 'li', function(e) {
 				if(menuState() == true) {
 					mui.fire(mui.currentWebview.opener(), "menu:close");
 					return;

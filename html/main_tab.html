@@ -15,11 +15,11 @@
 	<body>
 		<nav class="mui-bar mui-bar-tab tabbar">
 			<a class="mui-tab-item mui-active" id="fieldDistr.html" target="fieldDistr.html">
-				<span class="mui-icon iconfont icon-xianchang"></span>
+				<span class="mui-icon iconfont icon-xianchang"><span id="mapCount" class="mui-badge" style="margin-left: -5px; visibility: hidden;">0</span></span>
 				<span class="mui-tab-label">现场分布</span>
 			</a>
 			<a class="mui-tab-item" id="illegalReminder.html" target="illegalReminder.html">
-				<span class="mui-icon iconfont icon-tixing"><span class="mui-badge" style="margin-left: -5px;">5</span></span>
+				<span class="mui-icon iconfont icon-tixing"><span id="reminderCount" class="mui-badge" style="margin-left: -5px; visibility: hidden;">0</span></span>
 				<span class="mui-tab-label">违规提醒</span>
 			</a>
 			<a class="mui-tab-item" id="helmetState.html" target="helmetState.html">
@@ -116,6 +116,32 @@
 					defaultTab.classList.add('mui-active');
 				}
 			});
+
+			window.addEventListener('reminder', function(event) {
+				var count = event.detail.count;
+				var reminderCount = document.getElementById('reminderCount');
+				if(count>0) {
+					reminderCount.style.visibility = 'visible';
+					reminderCount.innerHTML = count;
+				} else {
+					reminderCount.style.visibility = 'hidden';
+				}
+			});
+			
+			window.addEventListener('fieldDistr', function(event) {
+				var count = event.detail.count;
+				var mapCount = document.getElementById('mapCount');
+				if(count>0) {
+					mapCount.style.visibility = 'visible';
+					mapCount.innerHTML = count;
+				} else {
+					mapCount.style.visibility = 'hidden';
+				}
+			});
+
+			function refreshReminderCount() {
+				console.log('=====');
+			}
 		</script>
 
 		<script>

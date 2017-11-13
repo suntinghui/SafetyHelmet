@@ -41,12 +41,13 @@ var SET_HOST = 'SET_HOST';
 var TIMEOUT = 20000
 
 var PAGE_SIZE = 20;
-var MAX_PAGE_SIZE = 19860727;
+var MAX_PAGE_SIZE = 20;
 
 // 下面是LocalStorage key
 var TokenKey = "TokenKey";
 var UserName = "UserName";
 var AdminId = 'AdminId';
+var pictureUrl = 'pictureUrl';
 var Name = "Name";
 
 var SaveUserName = 'SaveUserName';

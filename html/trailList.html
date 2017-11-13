@@ -6,6 +6,8 @@
 		<title>人员轨迹</title>
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../css/view.css" />
+		<link rel="stylesheet" href="../css/pullrefresh.css" />
 
 		<style>
 			.item-div {
@@ -33,11 +35,6 @@
 				color: #6699FF;
 			}
 			
-			.headImg {
-				width: 50px;
-				float: right;
-				right: 20px;
-			}
 		</style>
 	</head>
 
@@ -48,17 +45,23 @@
 		</header>
 
 		<div class="mui-content">
-			<div class="mui-scroll mui-card">
-				<ul class="mui-table-view" id="list">
-				</ul>
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll mui-card" id="newPullrefresh">
+					<div id="nodata1" style="margin-top: 30px; display: none; text-align: center;">
+						<img src="../img/nodata.png" style="width: 150px; height: 150px;" />
+					</div>
+					<ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" id="newList" style="margin-top: 51px;">
+					</ul>
+				</div>
 			</div>
-
 		</div>
 
 		<script src="../js/mui.min.js"></script>
 		<script type="text/javascript" src="../js/constants.js"></script>
 		<script type="text/javascript" src="../js/util.js"></script>
 		<script type="text/javascript" src="../js/view.js"></script>
+		<script src="../js/mui.pullToRefresh.js"></script>
+		<script src="../js/mui.pullToRefresh.material.js"></script>
 
 		<script type="text/javascript">
 			mui.init();
@@ -67,11 +70,52 @@
 				indicators: true //是否显示滚动条
 			});
 
-			window.onload = function() {
-				requestList();
-			};
+			var newPullupRefresh = null;
+			var newPulldownRefresh = null;
 
-			function requestList() {
+			(function($) {
+				//阻尼系数
+				var deceleration = mui.os.ios ? 0.003 : 0.0009;
+				$('.mui-scroll-wrapper').scroll({
+					bounce: false,
+					indicators: true, //是否显示滚动条
+					deceleration: deceleration
+				});
+
+				$.ready(function() {
+					$('#newPullrefresh').pullToRefresh({
+						down: {
+							callback: function() {
+								newPulldownRefresh = this;
+
+								var list = document.getElementById("newList");
+								// 首先清空下面的所有结点
+								while(list.hasChildNodes()) {
+									list.removeChild(list.firstChild);
+								}
+
+								newCurrentPage = 1;
+								requestNewList();
+							}
+						},
+						up: {
+							auto: true,
+							callback: function() {
+								newPullupRefresh = this;
+
+								newCurrentPage++;
+								requestNewList();
+							}
+						}
+					});
+
+				});
+			})(mui);
+
+			var newCurrentPage = 0; // 当前页码
+			var newTotalPages = 1; // 总页数
+
+			function requestNewList() {
 				checkNetwork();
 
 				mui.plusReady(function() {
@@ -82,8 +126,8 @@
 						fullname: '',
 						institutionName: '',
 						typeofworkid: '',
-						page: '1',
-						pageCount: MAX_PAGE_SIZE,
+						page: newCurrentPage,
+						pageCount: PAGE_SIZE,
 					}
 
 					var url = getHost() + "personInfo/selectPersonalInfo.action?arg=" + JSON.stringify(arg);
@@ -116,11 +160,19 @@
 					return;
 				}
 
-				var list = document.getElementById("list");
-				// 首先清空下面的所有结点
-				while(list.hasChildNodes()) {
-					list.removeChild(list.firstChild);
+				if(resp.dataList.length == 0) {
+					document.getElementById('nodata1').style.display = 'block';
+					document.getElementById('newList').style.display = 'none';
+					newPullupRefresh.pullUpTips.style.display = 'none';
+					return;
 				}
+
+				document.getElementById('nodata1').style.display = 'none';
+				document.getElementById('newList').style.display = 'block';
+
+				newTotalPages = Math.ceil(resp.totalSize / PAGE_SIZE);
+
+				var list = document.getElementById("newList");
 				// 开始添加新的节点
 				var fragment = document.createDocumentFragment();
 				var li;
@@ -139,7 +191,7 @@
 					a.appendChild(img);
 
 					a.appendChild(createInfoItem('人员姓名', record.fullname));
-					a.appendChild(createInfoItem('性别', record.gender));
+					a.appendChild(createInfoItem('性别', (record.gender == '0' ? '男' : '女')));
 					a.appendChild(createInfoItem('身份证号', record.idno));
 					a.appendChild(createInfoItem('所属单位', record.institutionname));
 					a.appendChild(createInfoItem('工种', record.typeofworkname));
@@ -150,9 +202,17 @@
 				}
 
 				list.appendChild(fragment);
+
+				if(newPulldownRefresh != null) {
+					newPulldownRefresh.endPullDownToRefresh();
+				}
+
+				if(newPullupRefresh != null) {
+					newPullupRefresh.endPullUpToRefresh((newCurrentPage >= newTotalPages));
+				}
 			}
 
-			mui('#list').on('tap', 'li', function(e) {
+			mui('#newList').on('tap', 'li', function(e) {
 				if(menuState() == true) {
 					mui.fire(mui.currentWebview.opener(), "menu:close");
 					return;
@@ -160,7 +220,7 @@
 
 				mui.openWindow({
 					id: Math.random() + '',
-					url: 'showMyLocation.html',
+					url: 'showHistoryTrail.html',
 					preload: true,
 					show: {
 						aniShow: 'pop-in'

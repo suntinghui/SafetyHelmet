@@ -7,7 +7,7 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../css/mui.min.css" rel="stylesheet" />
 		<link rel="stylesheet" href="../css/view.css" />
-
+		<link rel="stylesheet" href="../css/pullrefresh.css" />
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 
@@ -135,10 +135,13 @@
 				</div>
 
 				<!--人员分布表-->
-				<div id="item2" class="mui-control-content mui-card">
-					<div class="mui-scroll-wrapper scroll-content">
-						<div class="mui-scroll">
-							<ul class="mui-table-view" id="list">
+				<div id="item2" class="mui-control-content">
+					<div class="mui-scroll-wrapper">
+						<div class="mui-scroll" id="newPullrefresh">
+							<div id="nodata1" style="margin-top: 30px; display: none; text-align: center;">
+								<img src="../img/nodata.png" style="width: 150px; height: 150px;" />
+							</div>
+							<ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" id="newList" style="margin-top: 0px;">
 							</ul>
 						</div>
 					</div>
@@ -150,45 +153,154 @@
 		<script src="../js/mui.min.js"></script>
 		<script type="text/javascript" src="../js/constants.js"></script>
 		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=x1C7K385dRjOuugisRHZuAkyoU9Cnm06"></script>
-
 		<script type="text/javascript" src="../js/util.js"></script>
 		<script type="text/javascript" src="../js/view.js"></script>
+		<script src="../js/mui.pullToRefresh.js"></script>
+		<script src="../js/mui.pullToRefresh.material.js"></script>
 
 		<script type="text/javascript">
 			mui.init();
-			mui('.mui-scroll-wrapper').scroll();
-			mui('.scroll-content').scroll({
-				indicators: true //是否显示滚动条
-			});
 
-			mui('#list').on('tap', 'li', function(e) {
-				if(menuState() == true) {
-					mui.fire(mui.currentWebview.opener(), "menu:close");
-					return;
-				}
-				
-				var extras = {
-					personUid: this.id,
-				}
+			var map = new BMap.Map("allmap");
+			window.onload = function() {
+				initMap();
 
-				mui.openWindow({
-					id: Math.random() + '',
-					url: 'persionDetail.html',
-					preload: true,
-					show: {
-						aniShow: 'pop-in'
-					},
-					extras: extras
+				requestPersonalMap();
+			};
+
+			function requestPersonalMap() {
+				checkNetwork();
+
+				mui.plusReady(function() {
+					plus.nativeUI.showWaiting("正在请求数据...");
+
+					var arg = {
+						channel: getChannel(),
+					}
+
+					var url = getHost() + "personInfo/selectPersonalInfoMap.action?arg=" + JSON.stringify(arg);
+					console.log(url);
+
+					mui.ajax(url, {
+						dataType: 'json',
+						type: 'get',
+						timeout: TIMEOUT,
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						success: function(data) {
+							plus.nativeUI.closeWaiting();
+
+							responsePersonalMap(data);
+						},
+						error: function(xhr, type, errorThrown) {
+							plus.nativeUI.closeWaiting();
+
+							mui.toast(getHttpErrorDesp(type));
+						}
+					});
 				});
-			});
+			}
+
+			function responsePersonalMap(resp) {
+				var bounds = map.getBounds();
+				var sw = bounds.getSouthWest();
+				var ne = bounds.getNorthEast();
+				var lngSpan = Math.abs(sw.lng - ne.lng);
+				var latSpan = Math.abs(ne.lat - sw.lat);
+				
+				mui.fire(mui.currentWebview.opener(), 'fieldDistr', {
+					count: resp.dataList.length
+				});
+
+				for(var i = 0; i < resp.dataList.length; i++) {
+					var item = resp.dataList[i];
+
+					var longitude = item.point.split('|')[0];
+					var latitude = item.point.split('|')[1];
+					var point = new BMap.Point(parseFloat(longitude), parseFloat(latitude));
+					var marker = new BMap.Marker(point);
+
+					map.addOverlay(marker);
+
+					if(i == 0) {
+						map.setCenter(point);
+					}
+
+					// 闭包实现 http://blog.csdn.net/u013084331/article/details/50716467
+					(function() {
+						var temp = item;
+						
+						marker.addEventListener("click", function() {
+							if(menuState() == true) {
+								mui.fire(mui.currentWebview.opener(), "menu:close");
+								return;
+							}
+
+							mui.openWindow({
+								id: Math.random() + '',
+								url: 'persionDetail.html',
+								preload: true,
+								show: {
+									aniShow: 'pop-in'
+								},
+								extras: {
+									personUid: temp.personuid
+								}
+							});
+						});
+					})();
+				}
+			}
 		</script>
 
 		<script>
-			window.onload = function() {
-				requestSelPersonInfo();
-			};
+			var newPullupRefresh = null;
+			var newPulldownRefresh = null;
 
-			function requestSelPersonInfo() {
+			(function($) {
+				//阻尼系数
+				var deceleration = mui.os.ios ? 0.003 : 0.0009;
+				$('.mui-scroll-wrapper').scroll({
+					bounce: false,
+					indicators: true, //是否显示滚动条
+					deceleration: deceleration
+				});
+
+				$.ready(function() {
+					$('#newPullrefresh').pullToRefresh({
+						down: {
+							callback: function() {
+								newPulldownRefresh = this;
+
+								var list = document.getElementById("newList");
+								// 首先清空下面的所有结点
+								while(list.hasChildNodes()) {
+									list.removeChild(list.firstChild);
+								}
+
+								newCurrentPage = 1;
+								requestNewList();
+							}
+						},
+						up: {
+							auto: true,
+							callback: function() {
+								newPullupRefresh = this;
+
+								newCurrentPage++;
+								requestNewList();
+							}
+						}
+					});
+
+				});
+			})(mui);
+
+			var newCurrentPage = 0; // 当前页码
+			var newTotalPages = 1; // 总页数
+
+			function requestNewList() {
 				checkNetwork();
 
 				mui.plusReady(function() {
@@ -199,8 +311,8 @@
 						fullname: '',
 						institutionName: '',
 						typeofworkid: '',
-						page: '1',
-						pageCount: MAX_PAGE_SIZE,
+						page: newCurrentPage,
+						pageCount: PAGE_SIZE,
 					}
 
 					var url = getHost() + "personInfo/selectPersonalInfo.action?arg=" + JSON.stringify(arg);
@@ -216,7 +328,7 @@
 						success: function(data) {
 							plus.nativeUI.closeWaiting();
 
-							responseSelPersonInfo(data);
+							responseNewList(data);
 						},
 						error: function(xhr, type, errorThrown) {
 							plus.nativeUI.closeWaiting();
@@ -227,17 +339,25 @@
 				});
 			}
 
-			function responseSelPersonInfo(resp) {
+			function responseNewList(resp) {
 				if(resp.respMsgCode != '00') {
 					mui.alert(resp.respMSG);
 					return;
 				}
 
-				var list = document.getElementById("list");
-				// 首先清空下面的所有结点
-				while(list.hasChildNodes()) {
-					list.removeChild(list.firstChild);
+				if(resp.dataList.length == 0) {
+					document.getElementById('nodata1').style.display = 'block';
+					document.getElementById('newList').style.display = 'none';
+					newPullupRefresh.pullUpTips.style.display = 'none';
+					return;
 				}
+
+				document.getElementById('nodata1').style.display = 'none';
+				document.getElementById('newList').style.display = 'block';
+
+				newTotalPages = Math.ceil(resp.totalSize / PAGE_SIZE);
+
+				var list = document.getElementById("newList");
 				// 开始添加新的节点
 				var fragment = document.createDocumentFragment();
 				var li;
@@ -256,7 +376,7 @@
 					a.appendChild(img);
 
 					a.appendChild(createInfoItem('人员姓名', record.fullname));
-					a.appendChild(createInfoItem('性别', record.gender));
+					a.appendChild(createInfoItem('性别', (record.gender == '0' ? '男' : '女')));
 					a.appendChild(createInfoItem('身份证号', record.idno));
 					a.appendChild(createInfoItem('所属单位', record.institutionname));
 					a.appendChild(createInfoItem('佩戴状态', (record.wearstatus == '0' ? '未穿戴' : '已穿戴')));
@@ -265,61 +385,24 @@
 					fragment.appendChild(li);
 				}
 				list.appendChild(fragment);
-			}
-		</script>
 
-		<script>
-			// 百度地图API功能
-			var map = new BMap.Map("allmap");
-			var point = new BMap.Point(116.332782, 40.007978);
-			map.centerAndZoom(point, 16);
+				if(newPulldownRefresh != null) {
+					newPulldownRefresh.endPullDownToRefresh();
+				}
 
-			// 瓦片
-			var tileLayer = new BMap.TileLayer({
-				isTransparentPng: true
-			});
-			tileLayer.getTilesUrl = function(tileCoord, zoom) {
-				var x = tileCoord.x;
-				var y = tileCoord.y;
-				var url = 'http://lbsyun.baidu.com/jsdemo/demo/tiles/' + zoom + '/tile' + x + '_' + y + '.png';
-				console.log(url);
-				return url; //根据当前坐标，选取合适的瓦片图
+				if(newPullupRefresh != null) {
+					newPullupRefresh.endPullUpToRefresh((newCurrentPage >= newTotalPages));
+				}
 			}
 
-			var copyCtrl = new BMap.CopyrightControl({
-				anchor: BMAP_ANCHOR_BOTTOM_RIGHT
-			});
-			copyCtrl.addCopyright({
-				id: 1,
-				content: "版权说明：清华校园图片取自互联网"
-			});
-			map.addControl(copyCtrl);
-
-			function add_control() {
-				map.addTileLayer(tileLayer);
-			}
-
-			function delete_control() {
-				map.removeTileLayer(tileLayer);
-			}
-			add_control();
-
-			// 编写自定义函数,创建标注
-			function addMarker(point) {
-				var marker = new BMap.Marker(point);
-				map.addOverlay(marker);
-
-				marker.addEventListener("click", attribute);
-			}
-
-			// 点击事件
-			function attribute(e) {
-				//var p = e.target.getPosition(); //获取marker的位置
-				//alert("marker的位置是" + p.lng + "," + p.lat);
-
+			mui('#newList').on('tap', 'li', function(e) {
 				if(menuState() == true) {
 					mui.fire(mui.currentWebview.opener(), "menu:close");
 					return;
+				}
+
+				var extras = {
+					personUid: this.id,
 				}
 
 				mui.openWindow({
@@ -329,18 +412,125 @@
 					show: {
 						aniShow: 'pop-in'
 					},
+					extras: extras
 				});
+			});
+		</script>
+
+		<script>
+			function initMap() {
+				// 百度地图API功能
+				var point = new BMap.Point(116.332782, 40.007978);
+				map.centerAndZoom(point, 13);
+
+				addCopyrightControl();
+				addLocationControl();
+				addRefreshControl();
+				addWapianControl();
 			}
 
-			// 随机向地图添加12个标注
-			var bounds = map.getBounds();
-			var sw = bounds.getSouthWest();
-			var ne = bounds.getNorthEast();
-			var lngSpan = Math.abs(sw.lng - ne.lng);
-			var latSpan = Math.abs(ne.lat - sw.lat);
-			for(var i = 0; i < 12; i++) {
-				var point = new BMap.Point(sw.lng + lngSpan * (Math.random() * 0.7), ne.lat - latSpan * (Math.random() * 0.7));
-				addMarker(point);
+			function addCopyrightControl() {
+				// 版权说明
+				var copyCtrl = new BMap.CopyrightControl({
+					anchor: BMAP_ANCHOR_BOTTOM_RIGHT
+				});
+				copyCtrl.addCopyright({
+					id: 1,
+					content: "版权说明：智能安全帽管理平台"
+				});
+				map.addControl(copyCtrl);
+			}
+
+			function addLocationControl() {
+				// 添加带有定位的导航控件
+				var navigationControl = new BMap.NavigationControl({
+					// 靠左上角位置
+					anchor: BMAP_ANCHOR_TOP_LEFT,
+					// LARGE类型
+					type: BMAP_NAVIGATION_CONTROL_LARGE,
+					// 启用显示定位
+					enableGeolocation: true
+				});
+				map.addControl(navigationControl);
+
+				// 添加定位控件
+				var geolocationControl = new BMap.GeolocationControl();
+				geolocationControl.addEventListener("locationSuccess", function(e) {
+					// 定位成功事件
+					var address = '';
+					address += e.addressComponent.province;
+					address += e.addressComponent.city;
+					address += e.addressComponent.district;
+					address += e.addressComponent.street;
+					address += e.addressComponent.streetNumber;
+					console.log('当前位置：' + address);
+				});
+				geolocationControl.addEventListener("locationError", function(e) {
+					// 定位失败事件
+					console.log('定位失败：' + e.message);
+				});
+				map.addControl(geolocationControl);
+			}
+
+			// 添加瓦片
+			function addWapianControl() {
+				// 添加瓦片
+				var tileLayer = new BMap.TileLayer({
+					isTransparentPng: true
+				});
+				tileLayer.getTilesUrl = function(tileCoord, zoom) {
+					var x = tileCoord.x;
+					var y = tileCoord.y;
+					var url = 'http://lbsyun.baidu.com/jsdemo/demo/tiles/' + zoom + '/tile' + x + '_' + y + '.png';
+					console.log(url);
+					return url; //根据当前坐标，选取合适的瓦片图
+				}
+				map.addTileLayer(tileLayer);
+			}
+
+			// 创建刷新按钮
+			function addRefreshControl() {
+				// 定义一个控件类,即function
+				function ZoomControl() {
+					// 默认停靠位置和偏移量
+					this.defaultAnchor = BMAP_ANCHOR_TOP_RIGHT;
+					this.defaultOffset = new BMap.Size(10, 10);
+				}
+
+				// 通过JavaScript的prototype属性继承于BMap.Control
+				ZoomControl.prototype = new BMap.Control();
+
+				// 自定义控件必须实现自己的initialize方法,并且将控件的DOM元素返回
+				// 在本方法中创建个div元素作为控件的容器,并将其添加到地图容器中
+				ZoomControl.prototype.initialize = function(map) {
+					// 创建一个DOM元素
+					var div = document.createElement("div");
+					div.style.border = "1px solid #f3f3f3";
+					div.style.borderRadius = '2px';
+					div.style.boxShadow = '2px #eeeeee';
+					div.style.padding = '4px 4px 0px 4px';
+					div.style.backgroundColor = "white";
+
+					// 添加文字说明
+					var img = document.createElement('img');
+					img.src = '../img/refresh.png';
+					img.style.width = '28px';
+					div.appendChild(img);
+
+					div.onclick = function(e) {
+						map.clearOverlays();
+
+						requestPersonalMap();
+					}
+					// 添加DOM元素到地图中
+					map.getContainer().appendChild(div);
+					// 将DOM元素返回
+					return div;
+				}
+				// 创建控件
+				var myZoomCtrl = new ZoomControl();
+
+				map.addControl(myZoomCtrl);
 			}
 		</script>
 	</body>

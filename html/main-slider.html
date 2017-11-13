@@ -90,7 +90,7 @@
 	<body>
 		<div class="mui-content">
 			<div id="headDiv">
-				<img src="../img/head.png" id="headImg" onerror="this.onerror='';this.src='../img/head_placehold.JPG'" />
+				<img src="../img/head.png" id="headImg" />
 			</div>
 			<div id="name">王志亮</div>
 
@@ -119,14 +119,11 @@
 
 		<script type="text/javascript" src="../js/mui.min.js"></script>
 		<script type="text/javascript" src="../js/constants.js"></script>
-		<script type="text/javascript" src="../js/util.js" ></script>
-		<script type="text/javascript" src="../js/view.js" ></script>
+		<script type="text/javascript" src="../js/util.js"></script>
+		<script type="text/javascript" src="../js/view.js"></script>
 
 		<script>
-			window.onload = function(){
-				requestHeadImg();
-			};
-			
+			document.getElementById('headImg').src = window.localStorage.getItem(pictureUrl);
 			document.getElementById('name').innerHTML = window.localStorage.getItem(Name);
 
 			document.getElementById('personInfo').addEventListener('tap', function() {
@@ -143,6 +140,9 @@
 			}, false);
 
 			document.getElementById('aboutUs').addEventListener('tap', function() {
+				mui.toast('暂未实现');
+				return;
+				
 				close();
 
 				mui.openWindow({
@@ -177,34 +177,6 @@
 
 				mui.fire(mui.currentWebview.opener(), "logout");
 			}, false);
-
-			function requestHeadImg() {
-				var arg = {
-					adminId: window.localStorage.getItem(AdminId),
-				}
-
-				var url = getHost() + "admin/readPic.action?arg=" + JSON.stringify(arg);
-				console.log(url);
-
-				mui.ajax(url, {
-					dataType: 'json',
-					type: 'get',
-					timeout: TIMEOUT,
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					success: function(data) {
-						plus.nativeUI.closeWaiting();
-
-						responseLogin(data);
-					},
-					error: function(xhr, type, errorThrown) {
-						plus.nativeUI.closeWaiting();
-
-						mui.toast(getHttpErrorDesp(type));
-					}
-				});
-			}
 		</script>
 
 		<script type="text/javascript" charset="utf-8">

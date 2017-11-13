@@ -88,11 +88,6 @@
 					</li>
 
 					<li class="mui-table-view-cell item-div">
-						<div class="item-name">组别</div>
-						<div class="item-value"></div>
-					</li>
-
-					<li class="mui-table-view-cell item-div">
 						<div class="item-name">注册时间</div>
 						<div id="regTime" class="item-value"></div>
 					</li>
@@ -149,6 +144,7 @@
 		<script type="text/javascript">
 			mui.init();
 
+			var person;
 			var personUid = '';
 
 			// 查看身份证等照片
@@ -176,6 +172,10 @@
 					show: {
 						aniShow: 'pop-in'
 					},
+					extras: {
+						longitude: person.longitude,
+						latitude: person.latitude
+					}
 				});
 			}, false);
 
@@ -250,20 +250,29 @@
 			}
 
 			function responseDetail(resp) {
-				document.getElementById('headImg').src = resp.pictureUrl;
+				person = resp;
 
-				document.getElementById('fullname').innerHTML = resp.fullname;
-				document.getElementById('gender').innerHTML = resp.gender;
-				document.getElementById('idno').innerHTML = resp.idno;
-				document.getElementById('institutionname').innerHTML = resp.institutionname;
-				document.getElementById('typeofworkname').innerHTML = resp.typeofworkname;
-				document.getElementById('enterTime').innerHTML = resp.enterTime;
-				document.getElementById('regTime').innerHTML = resp.regTime;
-				document.getElementById('leaveTime').innerHTML = resp.leaveTime;
-				document.getElementById('wearstatus').innerHTML = resp.wearstatus == '0' ? '未穿戴' : '已穿戴';
+				try {
+					document.getElementById('headImg').src = resp.pictureUrl;
 
-				var state = '已激活</br>电量' + resp.dumpenergy + '%</br>GPS信号:' + resp.netsignalstrength;
-				document.getElementById('state').innerHTML = state;
+					document.getElementById('fullname').innerHTML = resp.fullname;
+					document.getElementById('gender').innerHTML = (resp.gender == '0' ? '男' : '女');
+					document.getElementById('idno').innerHTML = resp.idno;
+					document.getElementById('institutionname').innerHTML = resp.institutionname;
+					document.getElementById('typeofworkname').innerHTML = resp.typeofworkname;
+					document.getElementById('enterTime').innerHTML = resp.enterTime;
+					document.getElementById('regTime').innerHTML = resp.regTime;
+					document.getElementById('leaveTime').innerHTML = resp.leaveTime;
+					document.getElementById('wearstatus').innerHTML = resp.wearstatus == '0' ? '未穿戴' : '已穿戴';
+
+					var state = '已激活</br>电量' + resp.dumpenergy + '%</br>GPS信号:' + resp.netsignalstrength;
+					document.getElementById('state').innerHTML = state;
+
+				} catch(e) {
+					mui.alert('没有查询到该用户的详细信息', '提示', function(){
+						mui.back();
+					});
+				}
 			}
 		</script>
 	</body>

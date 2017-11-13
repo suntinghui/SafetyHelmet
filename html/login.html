@@ -56,11 +56,11 @@
 	</head>
 
 	<body>
-		<div class="mui-content" >
+		<div class="mui-content">
 
 			<div style="text-align: center; margin:0 auto;">
 				<img src="../img/login_head.png" style="width: 25%;" /><br />
-				<img src="../img/login_anquan.jpg" style="width: 30%;" />
+				<img src="../img/login_anquan.png" style="width: 30%; margin-top: 5px";/>
 			</div>
 
 			<div id="contentDiv">
@@ -120,9 +120,8 @@
 				loginReq();
 				//openMainPage();
 			}, false);
-			
-			forgetPwdDiv.addEventListener('tap', function(){
-			}, false);
+
+			forgetPwdDiv.addEventListener('tap', function() {}, false);
 
 			var checkInput = function() {
 				if(userNameText.value.length == 0) {
@@ -191,6 +190,7 @@
 					window.localStorage.setItem(UserName, resp.username);
 					window.localStorage.setItem(AdminId, resp.admin.adminid);
 					window.localStorage.setItem(Name, resp.admin.name);
+					window.localStorage.setItem(pictureUrl, resp.pictureUrl);
 
 					// 保存登录用户名
 					window.localStorage.setItem(SaveUserName, userNameText.value);
@@ -221,7 +221,6 @@
 				});
 				nw.show();
 			}
-
 		</script>
 
 	</body>

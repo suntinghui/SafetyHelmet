@@ -36,46 +36,50 @@
 
 		<script type="text/javascript">
 			mui.init()
-		</script>
 
-		<script type="text/javascript">
-			// 百度地图API功能
-			var map = new BMap.Map("allmap");
-			var point = new BMap.Point(116.332782, 40.007978);
-			map.centerAndZoom(point, 16);
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				var longitude = self.longitude;
+				var latitude = self.latitude;
 
-			var tileLayer = new BMap.TileLayer({
-				isTransparentPng: true
+				// 百度地图API功能
+				var map = new BMap.Map("allmap");
+				var point = new BMap.Point(parseFloat(longitude), parseFloat(latitude));
+				map.centerAndZoom(point, 16);
+
+				var tileLayer = new BMap.TileLayer({
+					isTransparentPng: true
+				});
+				tileLayer.getTilesUrl = function(tileCoord, zoom) {
+					var x = tileCoord.x;
+					var y = tileCoord.y;
+					var url = 'http://lbsyun.baidu.com/jsdemo/demo/tiles/' + zoom + '/tile' + x + '_' + y + '.png';
+					console.log(url);
+					return url; //根据当前坐标，选取合适的瓦片图
+				}
+
+				var copyCtrl = new BMap.CopyrightControl({
+					anchor: BMAP_ANCHOR_BOTTOM_RIGHT
+				});
+				copyCtrl.addCopyright({
+					id: 1,
+					content: "版权说明：安全帽智能管理平台"
+				});
+				map.addControl(copyCtrl);
+
+				function add_control() {
+					map.addTileLayer(tileLayer);
+				}
+
+				function delete_control() {
+					map.removeTileLayer(tileLayer);
+				}
+				add_control();
+
+				// 添加点
+				var marker = new BMap.Marker(point); // 创建标注
+				map.addOverlay(marker); // 将标注添加到地图中
 			});
-			tileLayer.getTilesUrl = function(tileCoord, zoom) {
-				var x = tileCoord.x;
-				var y = tileCoord.y;
-				var url = 'http://lbsyun.baidu.com/jsdemo/demo/tiles/' + zoom + '/tile' + x + '_' + y + '.png';
-				console.log(url);
-				return url; //根据当前坐标，选取合适的瓦片图
-			}
-
-			var copyCtrl = new BMap.CopyrightControl({
-				anchor: BMAP_ANCHOR_BOTTOM_RIGHT
-			});
-			copyCtrl.addCopyright({
-				id: 1,
-				content: "版权说明：清华校园图片取自互联网"
-			});
-			map.addControl(copyCtrl);
-
-			function add_control() {
-				map.addTileLayer(tileLayer);
-			}
-
-			function delete_control() {
-				map.removeTileLayer(tileLayer);
-			}
-			add_control();
-			
-			// 添加点
-			var marker = new BMap.Marker(point); // 创建标注
-			map.addOverlay(marker); // 将标注添加到地图中
 		</script>
 	</body>
 
