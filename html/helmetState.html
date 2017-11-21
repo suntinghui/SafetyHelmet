@@ -69,7 +69,7 @@
 			mui('.scroll-content').scroll({
 				indicators: true //是否显示滚动条
 			});
-			
+
 			var resp
 
 			var newPullupRefresh = null;
@@ -183,7 +183,8 @@
 					var record = resp.dataList[i];
 					li = document.createElement('li');
 					li.className = 'mui-table-view-cell';
-					li.id = i + "";
+					
+					li.id = JSON.stringify(record);
 
 					var a = document.createElement('a');
 					a.className = 'mui-navigate-right';
@@ -221,13 +222,17 @@
 						latitude: '40.007978'
 					}
 				});
+				
+				return false;
 			});
 
-			mui('#newList').on('tap', '.other', function(e) {
+			mui('#newList').on('tap', 'li', function(e) {
 				if(menuState() == true) {
 					mui.fire(mui.currentWebview.opener(), "menu:close");
 					return;
 				}
+
+				var detail = this.getAttribute("id");
 
 				mui.openWindow({
 					id: Math.random() + '',
@@ -236,10 +241,12 @@
 					show: {
 						aniShow: 'pop-in'
 					},
-					extras:{
-						
+					extras: {
+						detail: detail
 					}
 				});
+				
+				return false;
 			});
 		</script>
 	</body>

@@ -37,62 +37,124 @@
 
 		<script src="../js/mui.min.js"></script>
 		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=x1C7K385dRjOuugisRHZuAkyoU9Cnm06"></script>
+		<script type="text/javascript" src="../js/constants.js"></script>
+		<script type="text/javascript" src="../js/util.js"></script>
+		<script type="text/javascript" src="../js/view.js"></script>
 
 		<script type="text/javascript">
-			mui.init()
-		</script>
+			mui.init();
 
-		<script>
-			// 百度地图API功能
-			var map = new BMap.Map("allmap");
-			map.centerAndZoom(new BMap.Point(116.404, 39.915), 18);
+			window.onload = function() {
+				mui.plusReady(function() {
+					var self = plus.webview.currentWebview();
 
-			var myP1 = new BMap.Point(116.380967, 39.913285); //起点
-			var myP2 = new BMap.Point(116.424374, 39.914668); //终点
-			var myIcon = new BMap.Icon("../img/trailImg.png", new BMap.Size(32, 70), { //小车图片
-				//offset: new BMap.Size(0, -5),    //相当于CSS精灵
-				imageOffset: new BMap.Size(0, 0) //图片的偏移量。为了是图片底部中心对准坐标点。
-			});
-			var driving2 = new BMap.DrivingRoute(map, {
-				renderOptions: {
-					map: map,
-					autoViewport: true
-				}
-			}); //驾车实例
-			driving2.search(myP1, myP2); //显示一条公交线路
+					requestTrail(self.helmetid);
+				});
+			};
 
-			window.run = function() {
-				var driving = new BMap.DrivingRoute(map); //驾车实例
-				driving.search(myP1, myP2);
-				driving.setSearchCompleteCallback(function() {
-					var pts = driving.getResults().getPlan(0).getRoute(0).getPath(); //通过驾车实例，获得一系列点的数组
-					var paths = pts.length; //获得有几个点
+			function requestTrail(helmetid) {
+				checkNetwork();
 
-					var carMk = new BMap.Marker(pts[0], {
-						icon: myIcon
-					});
-					map.addOverlay(carMk);
-					i = 0;
+				mui.plusReady(function() {
+					plus.nativeUI.showWaiting("正在请求数据...");
 
-					function resetMkPoint(i) {
-						carMk.setPosition(pts[i]);
-						if(i < paths) {
-							setTimeout(function() {
-								i++;
-								resetMkPoint(i);
-							}, 100);
-						}
+					var arg = {
+						channel: getChannel(),
+						helmetid: helmetid,
+						startTime: '',
+						endTime: ''
 					}
-					setTimeout(function() {
-						resetMkPoint(5);
-					}, 100)
 
+					var url = getHost() + "personInfo/selectLocationrecListByHelmetidAndDate.action?arg=" + JSON.stringify(arg);
+					console.log(url);
+
+					mui.ajax(url, {
+						dataType: 'json',
+						type: 'get',
+						timeout: TIMEOUT,
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						success: function(data) {
+							plus.nativeUI.closeWaiting();
+
+							responseTrail(data);
+						},
+						error: function(xhr, type, errorThrown) {
+							plus.nativeUI.closeWaiting();
+
+							mui.toast(getHttpErrorDesp(type));
+						}
+					});
 				});
 			}
 
-			setTimeout(function() {
-				run();
-			}, 1500);
+			function responseTrail(resp) {
+				if(resp.respMsgCode != '00') {
+					mui.alert(resp.respMsg, '提示', function() {
+						mui.back();
+					});
+
+				} else {
+					showMap(resp.dataList2);
+				}
+			}
+
+			var map = new BMap.Map("allmap");
+
+			function showMap(dataList) {
+				var point = new BMap.Point(121.421, 29.326);
+				map.centerAndZoom(point, 17);
+
+				var copyCtrl = new BMap.CopyrightControl({
+					anchor: BMAP_ANCHOR_BOTTOM_RIGHT
+				});
+				copyCtrl.addCopyright({
+					id: 1,
+					content: "版权说明：安全帽智能管理平台"
+				});
+				map.addControl(copyCtrl);
+
+				var points = new Array(dataList.length);
+				for(var i = 0; i < dataList.length; i++) {
+					var p = new Array(2);
+					p[0] = dataList[i].longitude;
+					p[1] = dataList[i].latitude;
+					points[i] = p;
+					if(i == 0) {
+						map.setCenter(new BMap.Point(p[0], p[1]));
+					}
+				}
+
+				for(var i = 0; i < points.length; i++) {
+					console.log(points[i][0] + '--' + points[i][1]);
+				}
+
+				map.addControl(createPolyLine(points, 'blue'));
+			}
+
+			function createPolyLine(points, color) {
+				/* points[][]数据结构为二维数组，这里转换为Marker，再将多个marker点放入pline，组成一条线  begin */
+				var pLine = [];
+				for(var i = 0; i < points.length; i++) {
+					pLine.push(new BMap.Point(points[i][0], points[i][1]));
+					if(i == 0 || i == points.length - 1) { //起点终点图标
+						map.addOverlay(new BMap.Marker(new BMap.Point(points[i][0],
+							points[i][1])));
+					}
+				}
+				/* points[][]数据结构为二维数组，这里转换为Marker，再将多个marker点放入pline，组成一条线  end */
+
+				/* 添加轨迹接口begin */
+				var polyline = new BMap.Polyline(pLine, {
+					strokeColor: color,
+					strokeWeight: 3,
+					strokeOpacity: 0.5
+				});
+				return polyline;
+				/* 添加轨迹接口begin */
+
+			};
 		</script>
 	</body>
 

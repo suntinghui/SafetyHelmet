@@ -46,42 +46,47 @@
 				<ul class="mui-table-view" id="list">
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">帽子颜色</div>
-						<div class="item-value">黄色</div>
+						<div class="item-value" id="helmetcolor"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">设备型号</div>
-						<div class="item-value">DZ43832-09</div>
+						<div class="item-value" id="helmettype"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">穿戴状态</div>
-						<div class="item-value">正常</div>
+						<div class="item-value" id="wearstatus"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">穿戴者</div>
-						<div class="item-value">王志亮</br>高级钳工</br>北京新世纪建筑有限公司</div>
+						<div class="item-value" id="fullname"></div>
+					</li>
+
+					<li class="mui-table-view-cell item-div">
+						<div class="item-name">工种</div>
+						<div class="item-value" id="typeofworkname"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">激活状态</div>
-						<div class="item-value">已激活</div>
+						<div class="item-value" id="activatedState"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">剩余电量</div>
-						<div class="item-value">85%</div>
+						<div class="item-value" id="dumpenergy"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">GPS信号</div>
-						<div class="item-value">强</div>
+						<div class="item-value" id="netsignalstrength"></div>
 					</li>
 
 					<li class="mui-table-view-cell item-div">
 						<div class="item-name">绑定人员</div>
-						<div class="item-value">王志亮</br>杨明东</br>贾培阵</br>王孝泰</br>赵鹏</br>李小电</div>
+						<div class="item-value">无</div>
 					</li>
 				</ul>
 			</div>
@@ -89,13 +94,32 @@
 		</div>
 
 		<script src="../js/mui.min.js"></script>
-		<script type="text/javascript" src="../js/constants.js" ></script>
-		<script type="text/javascript" src="../js/util.js" ></script>
-		<script type="text/javascript" src="../js/view.js" ></script>
-		
+		<script type="text/javascript" src="../js/constants.js"></script>
+		<script type="text/javascript" src="../js/util.js"></script>
+		<script type="text/javascript" src="../js/view.js"></script>
+
 		<script type="text/javascript">
 			mui.init();
-			
+
+			window.onload = function() {
+				mui.plusReady(function() {
+					var self = plus.webview.currentWebview();
+
+					try {
+						var record = JSON.parse(self.detail);
+
+						document.getElementById('fullname').innerHTML = record.fullname;
+						document.getElementById('helmetcolor').innerHTML = record.helmetcolor;
+						document.getElementById('helmettype').innerHTML = record.helmettype;
+						document.getElementById('wearstatus').innerHTML = record.wearstatus == '0' ? '未穿戴' : '已穿戴';
+						document.getElementById('typeofworkname').innerHTML = record.typeofworkname;
+						document.getElementById('activatedState').innerHTML = record.activatedState == '0' ? '未激活' : '已激活';
+						document.getElementById('dumpenergy').innerHTML = record.dumpenergy + '%';
+						document.getElementById('netsignalstrength').innerHTML = record.netsignalstrength;
+					} catch(e) {}
+
+				})
+			};
 		</script>
 	</body>
 

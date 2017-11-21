@@ -46,7 +46,7 @@
 
 		<div class="mui-content">
 			<div class="mui-scroll-wrapper">
-				<div class="mui-scroll mui-card" id="newPullrefresh">
+				<div class="mui-scroll" id="newPullrefresh">
 					<div id="nodata1" style="margin-top: 30px; display: none; text-align: center;">
 						<img src="../img/nodata.png" style="width: 150px; height: 150px;" />
 					</div>
@@ -130,7 +130,7 @@
 						pageCount: PAGE_SIZE,
 					}
 
-					var url = getHost() + "personInfo/selectPersonalInfo.action?arg=" + JSON.stringify(arg);
+					var url = getHost() + "personInfo/selectPersonalInfoTrack.action?arg=" + JSON.stringify(arg);
 					console.log(url);
 
 					mui.ajax(url, {
