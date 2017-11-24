@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/mui.picker.css" rel="stylesheet" />
+		<link href="../css/mui.poppicker.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../css/oa.css" />
+
+		<style>
+			.mui-bar .mui-pull-left .mui-icon {
+				padding-right: 5px;
+				font-size: 28px;
+			}
+			
+			.mui-bar .mui-btn {
+				font-weight: normal;
+				font-size: 17px;
+			}
+			
+			.mui-bar .mui-btn-link {
+				top: 1px;
+			}
+			
+			.mui-content {
+				padding: 5%;
+			}
+			
+			.tip {
+				color: red;
+				margin-top: 20px;
+				line-height: inherit;
+			}
+			
+			#ip {
+				font-size: 16px;
+			}
+			
+			#showOrg {
+				padding-top: 10px;
+				padding-bottom: 10px;
+				font-size: 16px;
+				text-align: left;
+				padding-left: 15px;
+			}
+			
+			#setBtn {
+				margin-top: 30px;
+				border: none;
+				padding-top: 10px;
+				padding-bottom: 10px;
+				font-size: 17px;
+				background: #007FCA;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header id="header" class="mui-bar mui-bar-nav navbar">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left backbtn"></a>
+			<h1 class="mui-title">设置服务器地址</h1>
+		</header>
+
+		<div class="mui-content">
+
+			<h5 class="tip">以下信息请在管理人员的指引下修改，设置错误会造成无法登录系统，请慎重修改!</h5>
+
+			<h5 class="mui-content-padded" style="margin-top: 20px;">服务器地址</h5>
+
+			<div class="mui-input-row" style="margin-top: 10px;">
+				<input id="ip" type="url" class="mui-input-clear" placeholder="慎重修改">
+			</div>
+
+			<button id='setBtn' class="mui-btn mui-btn-block mui-btn-primary oabtn">设&nbsp;&nbsp;置</button>
+
+		</div>
+
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/constants.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" src="../js/util.js"></script>
+		<script src="../js/view.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript">
+			mui.init();
+
+			var ip = document.getElementById('ip');
+			ip.value = getLocalStoreageHost();
+
+			document.getElementById('setBtn').addEventListener('tap', function() {
+				window.localStorage.setItem(SET_HOST, ip.value);
+
+				mui.alert('设置成功', '提示', function() {
+					mui.back();
+				})
+
+			}, false);
+		</script>
+	</body>
+
+</html>

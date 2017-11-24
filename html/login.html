@@ -60,7 +60,7 @@
 
 			<div style="text-align: center; margin:0 auto;">
 				<img src="../img/login_head.png" style="width: 25%;" /><br />
-				<img src="../img/login_anquan.png" style="width: 30%; margin-top: 5px";/>
+				<img src="../img/login_anquan.png" style="width: 30%; margin-top: 5px" ;/>
 			</div>
 
 			<div id="contentDiv">
@@ -85,7 +85,7 @@
 					</div>
 
 					<div class="mui-checkbox mui-left" style="float: right;" id="forgetPwdDiv">
-						<label id="forgetPwd" style="color: dodgerblue; margin-top: 5px; font-size: 16px;font-family: '微软雅黑';">忘记密码？</label>
+						<label id="forgetPwd" style="color: dodgerblue; margin-top: 5px; font-size: 16px;font-family: '微软雅黑';">设置地址</label>
 					</div>
 
 				</div>
@@ -100,6 +100,7 @@
 		<script src="../js/mui.min.js"></script>
 		<script src="../js/constants.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../js/util.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" src="../js/md5.js"></script>
 
 		<script type="text/javascript">
 			mui.init();
@@ -117,11 +118,20 @@
 			savepwd.checked = (window.localStorage.getItem(CheckSavePwd) == 'true');
 
 			loginBtn.addEventListener("tap", function(event) {
-//				loginReq();
-				openMainPage();
+				loginReq();
+				//openMainPage();
 			}, false);
 
-			forgetPwdDiv.addEventListener('tap', function() {}, false);
+			forgetPwdDiv.addEventListener('tap', function() {
+				mui.openWindow({
+					url: 'setIP.html',
+					id: "setIP.html", 
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					}
+				});
+			}, false);
 
 			var checkInput = function() {
 				if(userNameText.value.length == 0) {
@@ -150,7 +160,7 @@
 
 					var arg = {
 						name: userNameText.value,
-						pwd: passwordText.value,
+						pwd: md5(passwordText.value).toUpperCase(),
 						channel: getChannel(),
 						//deviceId:plus.device.uuid,
 						//clientid:pushInfo.clientid

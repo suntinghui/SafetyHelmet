@@ -169,7 +169,7 @@
 			}, false);
 
 			document.getElementById('checkUpdate').addEventListener('tap', function() {
-				mui.alert('当前已经是最新版本');
+				requestCheckNewVersion();
 			}, false);
 
 			document.getElementById('close-btn').addEventListener('tap', function() {
@@ -177,6 +177,62 @@
 
 				mui.fire(mui.currentWebview.opener(), "logout");
 			}, false);
+		</script>
+		
+		<script>
+			// 检查更新函数
+			function requestCheckNewVersion() {
+				mui.plusReady(function() {
+					plus.nativeUI.showWaiting("正在检查新版本...");
+				});
+
+				mui.ajax(FIR_CHECK_URL, {
+					dataType: 'json',
+					type: 'get',
+					timeout: TIMEOUT,
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					success: function(data) {
+						mui.plusReady(function() {
+							plus.nativeUI.closeWaiting(); //这里监听页面是否加载完毕，完成后关闭等待框
+						});
+
+						responseCheckNewVersion(data);
+					},
+					error: function(xhr, type, errorThrown) {
+						mui.plusReady(function() {
+							plus.nativeUI.closeWaiting(); //这里监听页面是否加载完毕，完成后关闭等待框
+						});
+
+						mui.toast(getHttpErrorDesp(type));
+					}
+				});
+			}
+
+			function responseCheckNewVersion(resp) {
+				try {
+					mui.getJSON("../manifest.json", null, function(data) {
+						var localVer = data.version.code;
+						var newVer = resp.version;
+						if((newVer - 0) > (localVer - 0)) {
+							mui.confirm('有新版本需要立即更新吗？', '检测到新版本', ['取消', '确认'], function(e) {
+								if(e.index == 1) {
+									plus.runtime.openURL(FIR_LINK);
+								}
+							})
+
+						} else {
+							mui.toast('当前已是最新版本');
+						}
+
+					});
+				} catch(e) {
+					console.log(e);
+					mui.toast('当前已是最新版本');
+				}
+			}
+			
 		</script>
 
 		<script type="text/javascript" charset="utf-8">
