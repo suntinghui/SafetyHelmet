@@ -181,7 +181,7 @@
 					var url = getHost() + "personInfo/selectPersonalInfoMap.action?arg=" + JSON.stringify(arg);
 					console.log(url);
 
-					mui.ajax(url, {
+					mui.ajax(encodeURI(url), {
 						dataType: 'json',
 						type: 'get',
 						timeout: TIMEOUT,
@@ -208,7 +208,7 @@
 				var ne = bounds.getNorthEast();
 				var lngSpan = Math.abs(sw.lng - ne.lng);
 				var latSpan = Math.abs(ne.lat - sw.lat);
-				
+
 				mui.fire(mui.currentWebview.opener(), 'fieldDistr', {
 					count: resp.dataList.length
 				});
@@ -220,6 +220,9 @@
 					var latitude = item.point.split('|')[1];
 					var point = new BMap.Point(parseFloat(longitude), parseFloat(latitude));
 					var marker = new BMap.Marker(point);
+					marker.setLabel(new BMap.Label(item.title, {
+						offset: new BMap.Size(20, -10)
+					}))
 
 					map.addOverlay(marker);
 
@@ -230,7 +233,7 @@
 					// 闭包实现 http://blog.csdn.net/u013084331/article/details/50716467
 					(function() {
 						var temp = item;
-						
+
 						marker.addEventListener("click", function() {
 							if(menuState() == true) {
 								mui.fire(mui.currentWebview.opener(), "menu:close");
@@ -318,7 +321,7 @@
 					var url = getHost() + "personInfo/selectPersonalInfo.action?arg=" + JSON.stringify(arg);
 					console.log(url);
 
-					mui.ajax(url, {
+					mui.ajax(encodeURI(url), {
 						dataType: 'json',
 						type: 'get',
 						timeout: TIMEOUT,
@@ -421,7 +424,7 @@
 			function initMap() {
 				// 百度地图API功能
 				var point = new BMap.Point(116.332782, 40.007978);
-				map.centerAndZoom(point, 13);
+				map.centerAndZoom(point, 18);
 
 				addCopyrightControl();
 				addLocationControl();

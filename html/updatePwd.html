@@ -111,7 +111,7 @@
 
 				var url = getHost() + 'Identity.ashx?Commond=ChangePwd&LoginName=' + window.localStorage.getItem(Name) + '&HisPwd=' + oldPwdInput.value + '&newPwd=' + newPwdInput.value + '&tokenKey=' + window.localStorage.getItem(TokenKey);
 				console.log(url);
-				mui.ajax(url, {
+				mui.ajax(encodeURI(url), {
 					dataType: 'json', //服务器返回json格式数据
 					type: 'get', //HTTP请求类型
 					timeout: TIMEOUT, //超时时间设置为10秒；

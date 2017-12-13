@@ -169,7 +169,7 @@
 					var url = getHost() + "admin/login.action?arg=" + JSON.stringify(arg);
 					console.log(url);
 
-					mui.ajax(url, {
+					mui.ajax(encodeURI(url), {
 						dataType: 'json',
 						type: 'get',
 						timeout: TIMEOUT,
