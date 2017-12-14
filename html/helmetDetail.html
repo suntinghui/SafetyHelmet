@@ -102,7 +102,7 @@
 					var self = plus.webview.currentWebview();
 
 					try {
-						var record = JSON.parse(self.detail);
+						var record = self.detail;
 
 						document.getElementById('fullname').innerHTML = record.fullname;
 						document.getElementById('helmetcolor').innerHTML = record.helmetcolor;

@@ -101,6 +101,7 @@
 		<script src="../js/constants.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../js/util.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript" src="../js/md5.js"></script>
+		<script type="text/javascript" src="../js/view.js"></script>
 
 		<script type="text/javascript">
 			mui.init();
@@ -154,7 +155,7 @@
 					return;
 
 				mui.plusReady(function() {
-					plus.nativeUI.showWaiting("正在登录...");
+					showProgressDialog("正在登录...");
 
 					var pushInfo = plus.push.getClientInfo();
 
@@ -177,12 +178,12 @@
 							'Content-Type': 'application/json'
 						},
 						success: function(data) {
-							plus.nativeUI.closeWaiting();
+							hideProgressDialog();
 
 							responseLogin(data);
 						},
 						error: function(xhr, type, errorThrown) {
-							plus.nativeUI.closeWaiting();
+							hideProgressDialog();
 
 							mui.toast(getHttpErrorDesp(type));
 						}

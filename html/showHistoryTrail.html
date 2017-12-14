@@ -56,7 +56,7 @@
 				checkNetwork();
 
 				mui.plusReady(function() {
-					plus.nativeUI.showWaiting("正在请求数据...");
+					showProgressDialog("正在请求数据...");
 
 					var arg = {
 						channel: getChannel(),
@@ -76,12 +76,12 @@
 							'Content-Type': 'application/json'
 						},
 						success: function(data) {
-							plus.nativeUI.closeWaiting();
+							hideProgressDialog();
 
 							responseTrail(data);
 						},
 						error: function(xhr, type, errorThrown) {
-							plus.nativeUI.closeWaiting();
+							hideProgressDialog();
 
 							mui.toast(getHttpErrorDesp(type));
 						}
@@ -91,7 +91,7 @@
 
 			function responseTrail(resp) {
 				if(resp.respMsgCode != '00') {
-					mui.alert(resp.respMsg, '提示', function() {
+					mui.alert(resp.respMSG, '提示', function() {
 						mui.back();
 					});
 
@@ -104,7 +104,7 @@
 
 			function showMap(dataList) {
 				var point = new BMap.Point(121.421, 29.326);
-				map.centerAndZoom(point, 17);
+				map.centerAndZoom(point, 18);
 
 				var copyCtrl = new BMap.CopyrightControl({
 					anchor: BMAP_ANCHOR_BOTTOM_RIGHT
@@ -130,7 +130,7 @@
 					console.log(points[i][0] + '--' + points[i][1]);
 				}
 
-				map.addControl(createPolyLine(points, 'blue'));
+				map.addOverlay(createPolyLine(points, 'blue'));
 			}
 
 			function createPolyLine(points, color) {
@@ -138,22 +138,35 @@
 				var pLine = [];
 				for(var i = 0; i < points.length; i++) {
 					pLine.push(new BMap.Point(points[i][0], points[i][1]));
-					if(i == 0 || i == points.length - 1) { //起点终点图标
-						map.addOverlay(new BMap.Marker(new BMap.Point(points[i][0],
-							points[i][1])));
+
+					if(i == 0) {
+						var startIcon = new BMap.Icon("../img/map_start.png", new BMap.Size(30, 30), {
+							anchor: new BMap.Size(15, 30)
+						});
+						var marker = new BMap.Marker(new BMap.Point(points[i][0], points[i][1]), {
+							icon: startIcon
+						});
+						map.addOverlay(marker);
+
+					} else if(i == points.length - 1) {
+						var endIcon = new BMap.Icon("../img/map_end.png", new BMap.Size(30, 30), {
+							anchor: new BMap.Size(15, 30)
+						});
+						var marker = new BMap.Marker(new BMap.Point(points[i][0], points[i][1]), {
+							icon: endIcon
+						});
+						map.addOverlay(marker);
 					}
 				}
 				/* points[][]数据结构为二维数组，这里转换为Marker，再将多个marker点放入pline，组成一条线  end */
-
 				/* 添加轨迹接口begin */
+				
 				var polyline = new BMap.Polyline(pLine, {
 					strokeColor: color,
 					strokeWeight: 3,
 					strokeOpacity: 0.5
 				});
 				return polyline;
-				/* 添加轨迹接口begin */
-
 			};
 		</script>
 	</body>

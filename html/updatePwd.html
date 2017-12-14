@@ -56,7 +56,8 @@
 		<script src="../js/mui.min.js"></script>
 		<script type="text/javascript" src="../js/constants.js"></script>
 		<script src="../js/util.js" type="text/javascript" charset="utf-8"></script>
-		<script type="text/javascript" src="../js/view.js" ></script>
+		<script type="text/javascript" src="../js/md5.js"></script>
+		<script type="text/javascript" src="../js/view.js"></script>
 
 		<script type="text/javascript">
 			mui.init();
@@ -105,52 +106,70 @@
 			}
 
 			function requestUpdatePwd() {
+				checkNetwork();
+
 				mui.plusReady(function() {
-					plus.nativeUI.showWaiting("正在加载...");
-				});
+					showProgressDialog("正在请求数据...");
 
-				var url = getHost() + 'Identity.ashx?Commond=ChangePwd&LoginName=' + window.localStorage.getItem(Name) + '&HisPwd=' + oldPwdInput.value + '&newPwd=' + newPwdInput.value + '&tokenKey=' + window.localStorage.getItem(TokenKey);
-				console.log(url);
-				mui.ajax(encodeURI(url), {
-					dataType: 'json', //服务器返回json格式数据
-					type: 'get', //HTTP请求类型
-					timeout: TIMEOUT, //超时时间设置为10秒；
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					success: function(data) {
-						mui.plusReady(function() {
-							plus.nativeUI.closeWaiting(); //这里监听页面是否加载完毕，完成后关闭等待框
-						});
-
-						console.log(JSON.stringify(data));
-
-						responseUpdatePwd(data);
-					},
-					error: function(xhr, type, errorThrown) {
-						mui.plusReady(function() {
-							plus.nativeUI.closeWaiting(); //这里监听页面是否加载完毕，完成后关闭等待框
-						});
-
-						mui.toast(getHttpErrorDesp(type));
+					var arg = {
+						channel: getChannel(),
+						adminid: window.localStorage.getItem(AdminId),
+						old_pwd: md5(oldPwdInput.value).toUpperCase(),
+						new_pwd: md5(newPwdInput.value).toUpperCase()
 					}
+
+					var url = getHost() + "admin/updatePwd.action?arg=" + JSON.stringify(arg);
+					console.log(url);
+
+					mui.ajax(encodeURI(url), {
+						dataType: 'json',
+						type: 'get',
+						timeout: TIMEOUT,
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						success: function(data) {
+							hideProgressDialog();
+
+							responseUpdatePwd(data);
+						},
+						error: function(xhr, type, errorThrown) {
+							hideProgressDialog();
+
+							mui.toast(getHttpErrorDesp(type));
+						}
+					});
 				});
 			}
 
 			function responseUpdatePwd(resp) {
-				if(resp.Result) {
+				if(resp.respMsgCode == '00') {
 					mui.alert('密码修改成功，请牢记新密码', '提示', function() {
 						mui.plusReady(function() {
-							var self = plus.webview.currentWebview();
-							self.parent().parent().close();
-
-							window.localStorage.setItem(SavePwd, '');
+							logout();
 						});
 					});
 				} else {
-					mui.alert(resp.Mesg, '提示', null);
+					mui.alert(resp.respMSG, '提示', null);
 				}
 			};
+
+			function logout() {
+				window.localStorage.setItem(CheckAutoLogin, false);
+
+				// 获取所有Webview窗口
+				var curr = plus.webview.currentWebview();
+				var wvs = plus.webview.all();
+				for(var i = 0, len = wvs.length; i < len; i++) {
+					//关闭除setting页面外的其他页面
+					if(wvs[i].getURL() == curr.getURL())
+						continue;
+					plus.webview.close(wvs[i]);
+				}
+				//打开login页面后再关闭
+				plus.webview.open('login.html');
+				curr.close();
+			}
 		</script>
 	</body>
 

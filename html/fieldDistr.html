@@ -172,7 +172,7 @@
 				checkNetwork();
 
 				mui.plusReady(function() {
-					plus.nativeUI.showWaiting("正在请求数据...");
+					showProgressDialog("正在请求数据...");
 
 					var arg = {
 						channel: getChannel(),
@@ -194,7 +194,7 @@
 							responsePersonalMap(data);
 						},
 						error: function(xhr, type, errorThrown) {
-							plus.nativeUI.closeWaiting();
+							hideProgressDialog();
 
 							mui.toast(getHttpErrorDesp(type));
 						}
@@ -307,7 +307,7 @@
 				checkNetwork();
 
 				mui.plusReady(function() {
-					plus.nativeUI.showWaiting("正在请求数据...");
+					showProgressDialog("正在请求数据...");
 
 					var arg = {
 						channel: getChannel(),
@@ -329,12 +329,12 @@
 							'Content-Type': 'application/json'
 						},
 						success: function(data) {
-							plus.nativeUI.closeWaiting();
+							hideProgressDialog();
 
 							responseNewList(data);
 						},
 						error: function(xhr, type, errorThrown) {
-							plus.nativeUI.closeWaiting();
+							hideProgressDialog();
 
 							mui.toast(getHttpErrorDesp(type));
 						}
@@ -466,7 +466,7 @@
 					address += e.addressComponent.district;
 					address += e.addressComponent.street;
 					address += e.addressComponent.streetNumber;
-					console.log('当前位置：' + address);
+					console.log('实时位置：' + address);
 				});
 				geolocationControl.addEventListener("locationError", function(e) {
 					// 定位失败事件

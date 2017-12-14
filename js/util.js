@@ -99,9 +99,7 @@ function isPhoneNum(str) {　　
 }
 
 function getHttpErrorDesp(type) {
-	//	mui.plusReady(function() {
-	//		plus.nativeUI.closeWaiting(); 
-	//	});
+	hideProgressDialog()
 
 	var desp = '未知异常,请重试';
 	if(type == 'timeout') {
@@ -269,9 +267,7 @@ function openContent(url, type, html) {
 		return;
 	}
 
-	mui.plusReady(function() {
-		plus.nativeUI.showWaiting("正在下载...");
-	});
+	showProgressDialog("正在下载...");
 
 	var dtask = plus.downloader.createDownload(url, {
 		filename: '_doc/oa' + Math.random() + type,
@@ -280,9 +276,7 @@ function openContent(url, type, html) {
 		retryInterval: 30 // 默认值为30s。
 
 	}, function(download, status) {
-		mui.plusReady(function() {
-			plus.nativeUI.closeWaiting();
-		});
+		hideProgressDialog()
 
 		if(status == 200) {
 			console.log("Download success: " + download.getFileName());

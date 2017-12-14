@@ -70,8 +70,6 @@
 				indicators: true //是否显示滚动条
 			});
 
-			var resp
-
 			var newPullupRefresh = null;
 			var newPulldownRefresh = null;
 
@@ -121,7 +119,7 @@
 				checkNetwork();
 
 				mui.plusReady(function() {
-					plus.nativeUI.showWaiting("正在请求数据...");
+					showProgressDialog("正在请求数据...");
 
 					var arg = {
 						channel: getChannel(),
@@ -144,12 +142,12 @@
 							'Content-Type': 'application/json'
 						},
 						success: function(data) {
-							plus.nativeUI.closeWaiting();
+							hideProgressDialog();
 
 							responseNewList(data);
 						},
 						error: function(xhr, type, errorThrown) {
-							plus.nativeUI.closeWaiting();
+							hideProgressDialog();
 
 							mui.toast(getHttpErrorDesp(type));
 						}
@@ -183,7 +181,7 @@
 					var record = resp.dataList[i];
 					li = document.createElement('li');
 					li.className = 'mui-table-view-cell';
-					
+
 					li.id = JSON.stringify(record);
 
 					var a = document.createElement('a');
@@ -192,7 +190,11 @@
 					a.appendChild(createInfoItem('帽子型号', record.helmettype, 'other'));
 					a.appendChild(createInfoItem('穿戴状态', (record.wearstatus == '0' ? '未穿戴' : '已穿戴'), 'other'));
 					a.appendChild(createInfoItem('穿戴人', record.fullname, 'other'));
-					a.appendChild(createInfoItem('实时位置', '点击查看', 'filelink currentLocation'));
+
+					var locDiv = createInfoItem('实时位置', '点击查看', 'filelink currentLocation');
+					locDiv.id = JSON.stringify(record);
+					a.appendChild(locDiv);
+
 					a.appendChild(createInfoItem('剩余电量', record.dumpenergy + '%', 'other'));
 
 					li.appendChild(a);
@@ -210,19 +212,22 @@
 			}
 
 			mui('#newList').on('tap', '.currentLocation', function(e) {
+				var record = JSON.parse(this.parentNode.getAttribute('id'));
+
 				mui.openWindow({
 					id: Math.random() + '',
-					url: 'showMyLocation.html',
+					url: 'showRealtimeLocation.html',
 					preload: true,
 					show: {
 						aniShow: 'pop-in'
 					},
 					extras: {
-						longitude: '116.332782',
-						latitude: '40.007978'
+						helmetid: record.helmetid,
+						longitude: record.longitude,
+						latitude: record.latitude
 					}
 				});
-				
+
 				return false;
 			});
 
@@ -232,7 +237,7 @@
 					return;
 				}
 
-				var detail = this.getAttribute("id");
+				var detail = JSON.parse(this.getAttribute("id"));
 
 				mui.openWindow({
 					id: Math.random() + '',
@@ -245,7 +250,7 @@
 						detail: detail
 					}
 				});
-				
+
 				return false;
 			});
 		</script>

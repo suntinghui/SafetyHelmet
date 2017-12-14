@@ -122,7 +122,7 @@
 			<div class="mui-scroll mui-card">
 				<ul class="mui-table-view" id="list">
 					<li class="mui-table-view-cell item-div" id="currentLocation">
-						<div class="item-name">当前位置</div>
+						<div class="item-name">实时位置</div>
 						<div class="item-value filelink">点击查看</div>
 					</li>
 
@@ -163,16 +163,17 @@
 				});
 			}, false);
 
-			// 当前位置
+			// 实时位置
 			document.getElementById('currentLocation').addEventListener('tap', function() {
 				mui.openWindow({
 					id: Math.random() + '',
-					url: 'showMyLocation.html',
+					url: 'showRealtimeLocation.html',
 					preload: true,
 					show: {
 						aniShow: 'pop-in'
 					},
 					extras: {
+						helmetid :person.helmetId,
 						longitude: person.longitude,
 						latitude: person.latitude
 					}
@@ -181,6 +182,7 @@
 
 			// 安全帽状态
 			document.getElementById('helmetDetail').addEventListener('tap', function() {
+				console.log(JSON.stringify(person));
 				mui.openWindow({
 					id: Math.random() + '',
 					url: 'helmetDetail.html',
@@ -188,6 +190,9 @@
 					show: {
 						aniShow: 'pop-in'
 					},
+					extras: {
+						detail: person
+					}
 				});
 			}, false);
 
@@ -200,8 +205,8 @@
 					show: {
 						aniShow: 'pop-in'
 					},
-					extras:{
-						helmetid:person.helmetId
+					extras: {
+						helmetid: person.helmetId
 					}
 				});
 			}, false);
@@ -221,7 +226,7 @@
 				checkNetwork();
 
 				mui.plusReady(function() {
-					plus.nativeUI.showWaiting("正在请求数据...");
+					showProgressDialog("正在请求数据...");
 
 					var arg = {
 						channel: getChannel(),
@@ -239,12 +244,12 @@
 							'Content-Type': 'application/json'
 						},
 						success: function(data) {
-							plus.nativeUI.closeWaiting();
+							hideProgressDialog();
 
 							responseDetail(data.person);
 						},
 						error: function(xhr, type, errorThrown) {
-							plus.nativeUI.closeWaiting();
+							hideProgressDialog();
 
 							mui.toast(getHttpErrorDesp(type));
 						}
@@ -272,7 +277,7 @@
 					document.getElementById('state').innerHTML = state;
 
 				} catch(e) {
-					mui.alert('没有查询到该用户的详细信息', '提示', function(){
+					mui.alert('没有查询到该用户的详细信息', '提示', function() {
 						mui.back();
 					});
 				}

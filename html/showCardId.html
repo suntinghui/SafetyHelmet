@@ -55,7 +55,7 @@
 			});
 
 			function requestImg() {
-				plus.nativeUI.showWaiting("正在查询...");
+				showProgressDialog("正在查询...");
 
 				var arg = {
 					personId: personId,
@@ -73,12 +73,12 @@
 						'Content-Type': 'application/json'
 					},
 					success: function(data) {
-						plus.nativeUI.closeWaiting();
+						hideProgressDialog();
 
 						responseImage(data);
 					},
 					error: function(xhr, type, errorThrown) {
-						plus.nativeUI.closeWaiting();
+						hideProgressDialog();
 
 						mui.toast(getHttpErrorDesp(type));
 					}

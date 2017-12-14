@@ -1074,9 +1074,7 @@ function confirmNext() {
 function saveOper(next) {
 	var childRecordId = '';
 
-	mui.plusReady(function() {
-		plus.nativeUI.showWaiting("正在加载..."); //这里是开始显示原生等待框
-	});
+	showProgressDialog("正在加载...");
 
 	mui.post(getHost() + 'WorkFlow.ashx?Commond=SaveFormData', {
 		instanceId: InstanceId,
@@ -1109,9 +1107,7 @@ function saveOper(next) {
 
 // 提交下一步
 function nextOper() {
-	mui.plusReady(function() {
-		plus.nativeUI.showWaiting("正在加载..."); //这里是开始显示原生等待框
-	});
+	showProgressDialog("正在加载...");
 
 	var url = getHost() + 'WorkFlow.ashx?Commond=FlowNext&tokenKey=' + window.localStorage.getItem(TokenKey) + '&recordId=' + exReturnSpace(resp.RecordId) + '&flowAttr=' + FlowAttr;
 	mui.ajax(url, {
@@ -1146,9 +1142,7 @@ function nextOper() {
 }
 
 function backOper() {
-	mui.plusReady(function() {
-		plus.nativeUI.showWaiting("正在加载..."); //这里是开始显示原生等待框
-	});
+	showProgressDialog("正在加载...");
 
 	var url = getHost() + 'WorkFlow.ashx?Commond=GoBack&tokenKey=' + window.localStorage.getItem(TokenKey) + '&recordId=' + exReturnSpace(resp.RecordId);
 	mui.ajax(url, {
@@ -1299,9 +1293,7 @@ function checkFormInput(arr) {
 
 // 主责领导
 function requestRecDocLeader(LeaderId) {
-	mui.plusReady(function() {
-		plus.nativeUI.showWaiting("正在加载...");
-	});
+	showProgressDialog("正在加载...");
 
 	var url = getHost() + 'DocManager.ashx?Commond=GetRecDocLeader&instanceId=' + InstanceId + '&tokenKey=' + window.localStorage.getItem(TokenKey);
 	mui.ajax(url, {
@@ -1364,9 +1356,7 @@ function requestSaveLeader(next) {
 	LeaderData.ISLC = (document.getElementById("ISLC").checked ? "1" : "0");
 	LeaderData.ISOpen = (!document.getElementById("ISOpen").checked ? "1" : "0");
 
-	mui.plusReady(function() {
-		plus.nativeUI.showWaiting("正在保存...");
-	});
+	showProgressDialog("正在保存...");
 
 	var url = getHost() + 'DocManager.ashx?Commond=SaveRecDocLeader&instanceId=' + InstanceId + '&tokenKey=' + window.localStorage.getItem(TokenKey) + '&recDocLeader=[' + JSON.stringify(LeaderData) + ']';
 	mui.ajax(url, {

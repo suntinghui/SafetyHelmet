@@ -97,10 +97,6 @@
 			<div class="line"></div>
 
 			<div>
-				<div class="itemdiv" id="personInfo">
-					<img src="../img/perinfo.png" class="itemimg" />个人信息
-				</div>
-
 				<div class="itemdiv" id="updatePwd">
 					<img src="../img/updatepwd.png" class="itemimg" />修改密码
 				</div>
@@ -126,23 +122,7 @@
 			document.getElementById('headImg').src = window.localStorage.getItem(pictureUrl);
 			document.getElementById('name').innerHTML = window.localStorage.getItem(Name);
 
-			document.getElementById('personInfo').addEventListener('tap', function() {
-				close();
-
-				mui.openWindow({
-					id: Math.random() + '',
-					url: 'personInfo.html',
-					preload: true,
-					show: {
-						aniShow: 'pop-in'
-					},
-				});
-			}, false);
-
 			document.getElementById('aboutUs').addEventListener('tap', function() {
-				mui.toast('暂未实现');
-				return;
-				
 				close();
 
 				mui.openWindow({
@@ -182,9 +162,7 @@
 		<script>
 			// 检查更新函数
 			function requestCheckNewVersion() {
-				mui.plusReady(function() {
-					plus.nativeUI.showWaiting("正在检查新版本...");
-				});
+				showProgressDialog("正在检查新版本...");
 
 				mui.ajax(FIR_CHECK_URL, {
 					dataType: 'json',
@@ -194,16 +172,12 @@
 						'Content-Type': 'application/json'
 					},
 					success: function(data) {
-						mui.plusReady(function() {
-							plus.nativeUI.closeWaiting(); //这里监听页面是否加载完毕，完成后关闭等待框
-						});
+						hideProgressDialog();
 
 						responseCheckNewVersion(data);
 					},
 					error: function(xhr, type, errorThrown) {
-						mui.plusReady(function() {
-							plus.nativeUI.closeWaiting(); //这里监听页面是否加载完毕，完成后关闭等待框
-						});
+						hideProgressDialog();
 
 						mui.toast(getHttpErrorDesp(type));
 					}

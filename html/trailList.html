@@ -119,7 +119,7 @@
 				checkNetwork();
 
 				mui.plusReady(function() {
-					plus.nativeUI.showWaiting("正在请求数据...");
+					showProgressDialog("正在请求数据...");
 
 					var arg = {
 						channel: getChannel(),
@@ -141,12 +141,12 @@
 							'Content-Type': 'application/json'
 						},
 						success: function(data) {
-							plus.nativeUI.closeWaiting();
+							hideProgressDialog();
 
 							responseList(data);
 						},
 						error: function(xhr, type, errorThrown) {
-							plus.nativeUI.closeWaiting();
+							hideProgressDialog();
 
 							mui.toast(getHttpErrorDesp(type));
 						}
