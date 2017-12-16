@@ -39,10 +39,10 @@
 	</head>
 
 	<body>
-		<header id="header" class="mui-bar mui-bar-nav navbar">
+		<!--<header id="header" class="mui-bar mui-bar-nav navbar">
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left backbtn"></a>
 			<h1 id="title" class="mui-title">人员轨迹</h1>
-		</header>
+		</header>-->
 
 		<div class="mui-content">
 			<div class="mui-scroll-wrapper">
@@ -50,7 +50,7 @@
 					<div id="nodata1" style="margin-top: 30px; display: none; text-align: center;">
 						<img src="../img/nodata.png" style="width: 150px; height: 150px;" />
 					</div>
-					<ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" id="newList" style="margin-top: 51px;">
+					<ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" id="newList">
 					</ul>
 				</div>
 			</div>
@@ -213,10 +213,7 @@
 			}
 
 			mui('#newList').on('tap', 'li', function(e) {
-				if(menuState() == true) {
-					mui.fire(mui.currentWebview.opener(), "menu:close");
-					return;
-				}
+				mui.fire(mui.currentWebview.opener(), "menu:swipeleft");
 
 				mui.openWindow({
 					id: Math.random() + '',

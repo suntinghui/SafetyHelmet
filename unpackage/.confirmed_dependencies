@@ -1,1 +1,59 @@
-null
+{
+	"html/main.html": {
+		"resources": [
+			"html/fieldDistr.html"
+		],
+		"refer": [
+			"html/trailList.html",
+			"html/fieldDistr.html",
+			"html/helmetState.html",
+			"html/illegalReminder.html"
+		]
+	},
+	"html/login.html": {
+		"refer": [
+			"html/main.html",
+			"html/offcanvas-drag-right-plus-main.html",
+			"html/mainTab.html"
+		]
+	},
+	"html/illegalReminder.html": {
+		"refer": [
+			"html/showIllegalLocation.html"
+		]
+	},
+	"html/offcanvas-drag-right-plus-main.html": {
+		"refer": [
+			"html/offcanvas-drag-right-plus-menu.html",
+			"html/trailList.html",
+			"html/fieldDistr.html",
+			"html/helmetState.html",
+			"html/illegalReminder.html"
+		],
+		"resources": [
+			"html/fieldDistr.html"
+		]
+	},
+	"html/fieldDistr.html": {
+		"refer": [
+			"html/persionDetail.html"
+		]
+	},
+	"html/helmetState.html": {
+		"refer": [
+			"html/helmetDetail.html"
+		]
+	},
+	"html/mainTab.html": {
+		"resources": [
+			"html/fieldDistr.html"
+		],
+		"refer": [
+			"html/trailList.html",
+			"html/fieldDistr.html",
+			"html/helmetState.html",
+			"html/mainMenu.html",
+			"html/illegalReminder.html"
+		]
+	}
+}

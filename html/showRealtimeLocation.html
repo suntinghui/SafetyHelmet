@@ -47,11 +47,11 @@
 
 			var map = new BMap.Map("allmap");
 			var marker;
-			
-			mui.back = function(){
-				mui.plusReady(function(){
+
+			mui.back = function() {
+				mui.plusReady(function() {
 					window.clearTimeout(timeout);
-					
+
 					var self = plus.webview.currentWebview();
 					self.close();
 				})
@@ -62,9 +62,9 @@
 				helmetid = self.helmetid;
 				longitude = self.longitude;
 				latitude = self.latitude;
-				
+
 				initMap();
-				
+
 				requestLocation();
 			});
 
@@ -85,12 +85,29 @@
 			}
 
 			function refreshMap() {
-				map.removeOverlay(marker);
-
 				var point = new BMap.Point(parseFloat(longitude), parseFloat(latitude));
-				map.centerAndZoom(point, 18);
-				marker = new BMap.Marker(point);
-				map.addOverlay(marker);
+
+				setTimeout(function() {
+					var convertor = new BMap.Convertor();
+					var pointArr = [];
+					pointArr.push(point);
+					convertor.translate(pointArr, 1, 5, translateCallback)
+				}, 1000);
+			}
+
+			//坐标转换完之后的回调函数
+			translateCallback = function(data) {
+				console.log('坐标转换完成。。。');
+				
+				if(data.status === 0) {
+					map.removeOverlay(marker);
+					
+					var point = data.points[0];
+
+					map.centerAndZoom(point, 18);
+					marker = new BMap.Marker(point);
+					map.addOverlay(marker);
+				}
 			}
 
 			function requestLocation() {
@@ -99,7 +116,7 @@
 						channel: getChannel(),
 						helmetid: helmetid
 					}
-					
+
 					var url = getHost() + "helmetInfo/selectLocation.action?arg=" + JSON.stringify(arg);
 					console.log(url);
 
@@ -127,10 +144,11 @@
 			}
 
 			function responseLocation(resp) {
-				if (resp.respCode == '00') {
+				console.log(JSON.stringify(resp));
+				if(resp.respMsgCode == '00') {
 					longitude = resp.Longitude;
 					latitude = resp.Latitude;
-					
+
 					refreshMap();
 				}
 			}

@@ -121,16 +121,30 @@
 					p[0] = dataList[i].longitude;
 					p[1] = dataList[i].latitude;
 					points[i] = p;
-					if(i == 0) {
-						map.setCenter(new BMap.Point(p[0], p[1]));
-					}
 				}
-
-				for(var i = 0; i < points.length; i++) {
-					console.log(points[i][0] + '--' + points[i][1]);
+				
+				if (points.length > 0) {
+					map.setCenter(new BMap.Point(points[0][0], points[0][1]));
 				}
-
 				map.addOverlay(createPolyLine(points, 'blue'));
+
+				/*
+				setTimeout(function() {
+					var convertor = new BMap.Convertor();
+					convertor.translate(points, 1, 5, translateCallback)
+				}, 1000);
+				*/
+			}
+
+			//坐标转换完之后的回调函数
+			translateCallback = function(data) {
+				console.log('转换坐标完成。。。');
+				if(data.status === 0) {
+					if(data.points.length > 0) {
+						map.setCenter(new BMap.Point(data.points[0][0], data.points[0][1]));
+					}
+					map.addOverlay(createPolyLine(data.points, 'blue'));
+				}
 			}
 
 			function createPolyLine(points, color) {
@@ -160,7 +174,7 @@
 				}
 				/* points[][]数据结构为二维数组，这里转换为Marker，再将多个marker点放入pline，组成一条线  end */
 				/* 添加轨迹接口begin */
-				
+
 				var polyline = new BMap.Polyline(pLine, {
 					strokeColor: color,
 					strokeWeight: 3,

@@ -126,7 +126,7 @@
 			forgetPwdDiv.addEventListener('tap', function() {
 				mui.openWindow({
 					url: 'setIP.html',
-					id: "setIP.html", 
+					id: "setIP.html",
 					preload: true,
 					show: {
 						aniShow: 'pop-in'
@@ -203,6 +203,8 @@
 					window.localStorage.setItem(Name, resp.admin.name);
 					window.localStorage.setItem(pictureUrl, resp.pictureUrl);
 
+					window.localStorage.setItem(LoginRespInfo, JSON.stringify(resp));
+
 					// 保存登录用户名
 					window.localStorage.setItem(SaveUserName, userNameText.value);
 					window.localStorage.setItem(CheckSavePwd, savepwd.checked);
@@ -221,16 +223,18 @@
 			}
 
 			function openMainPage() {
-				//	关于侧边栏，可以参考官网论坛
-				var nw = plus.webview.create('main_tab.html', 'main_tab.html', {
-					navigationbar: {
-						titletext: '',
-						weight: 'bold'
+				mui.openWindow({
+					url: 'mainTab.html',
+					id: "mainTab",
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
 					},
-					top: '0px',
-					bottom: '0px'
+					waiting: {
+						autoShow: true, //自动显示等待框，默认为true
+						title: '正在登录...',
+					}
 				});
-				nw.show();
 			}
 		</script>
 

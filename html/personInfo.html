@@ -36,7 +36,7 @@
 			<ul class="mui-table-view">
 				<li class="mui-table-view-cell">
 					<textarea class="mui-pull-left labelCon" readonly="readonly">姓名</textarea>
-					<textarea class="mui-pull-right inputCon" rows="1">王志亮</textarea>
+					<textarea class="mui-pull-right inputCon" rows="1"></textarea>
 				</li>
 
 				<li class="mui-table-view-cell">
@@ -60,14 +60,14 @@
 		</div>
 
 		<script src="../js/mui.min.js"></script>
-		<script type="text/javascript" src="../js/constants.js" ></script>
-		<script type="text/javascript" src="../js/util.js" ></script>
+		<script type="text/javascript" src="../js/constants.js"></script>
+		<script type="text/javascript" src="../js/util.js"></script>
 		<script type="text/javascript" src="../js/view.js"></script>
 
 		<script type="text/javascript">
 			mui.init();
-			
-			document.getElementById('save').addEventListener('tap', function(){
+
+			document.getElementById('save').addEventListener('tap', function() {
 				mui.alert('保存成功', '提示', function() {
 					mui.back();
 				});

@@ -55,9 +55,10 @@
 				var x = tileCoord.x;
 				var y = tileCoord.y;
 				var url = 'http://lbsyun.baidu.com/jsdemo/demo/tiles/' + zoom + '/tile' + x + '_' + y + '.png';
-				console.log(url);
+				//console.log(url);
 				return url; //根据当前坐标，选取合适的瓦片图
 			}
+			map.addTileLayer(tileLayer);
 
 			var copyCtrl = new BMap.CopyrightControl({
 				anchor: BMAP_ANCHOR_BOTTOM_RIGHT
@@ -68,18 +69,10 @@
 			});
 			map.addControl(copyCtrl);
 
-			function add_control() {
-				map.addTileLayer(tileLayer);
-			}
-
-			function delete_control() {
-				map.removeTileLayer(tileLayer);
-			}
-			add_control();
-
 			// 添加点
 			var marker = new BMap.Marker(point); // 创建标注
 			map.addOverlay(marker); // 将标注添加到地图中
+			
 		</script>
 	</body>
 

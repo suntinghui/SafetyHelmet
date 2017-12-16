@@ -3,8 +3,8 @@
 	"id": "H55710FCA",/*应用的标识，创建应用时自动生成，勿手动修改*/
 	"name": "智能安全帽平台",/*应用名称，程序桌面图标名称*/
 	"version": {
-		"name": "1.2",/*应用版本名称*/
-		"code": "12"
+		"name": "1.4",/*应用版本名称*/
+		"code": "14"
 	},
 	"description": "",/*应用描述信息*/
 	"icons": {
@@ -182,6 +182,147 @@
 					"xxhdpi": "/Users/sth/Documents/工作文档/联达动力/安全帽/splash/1080x1882.png"
 				}
 			}
+		}
+	},
+	"dependencies": {
+		"pages": {
+			"html/main.html": {
+				"resources": [
+					"html/fieldDistr.html"
+				],
+				"refer": [
+					"html/trailList.html",
+					"html/helmetState.html",
+					"html/illegalReminder.html"
+				],
+				"priority": 0
+			},
+			"html/login.html": {
+				"resources": [],
+				"refer": [
+					"html/main.html",
+					"html/offcanvas-drag-right-plus-main.html",
+					"html/mainTab.html"
+				],
+				"priority": 0
+			},
+			"html/illegalReminder.html": {
+				"resources": [],
+				"refer": [
+					"html/showIllegalLocation.html"
+				],
+				"priority": 0
+			},
+			"html/offcanvas-drag-right-plus-main.html": {
+				"resources": [
+					"html/fieldDistr.html"
+				],
+				"refer": [
+					"html/offcanvas-drag-right-plus-menu.html",
+					"html/trailList.html",
+					"html/helmetState.html",
+					"html/illegalReminder.html"
+				],
+				"priority": 0
+			},
+			"html/fieldDistr.html": {
+				"resources": [],
+				"refer": [
+					"html/persionDetail.html"
+				],
+				"priority": 0
+			},
+			"html/helmetState.html": {
+				"resources": [],
+				"refer": [
+					"html/helmetDetail.html"
+				],
+				"priority": 0
+			},
+			"html/mainTab.html": {
+				"resources": [
+					"html/fieldDistr.html"
+				],
+				"refer": [
+					"html/trailList.html",
+					"html/helmetState.html",
+					"html/mainMenu.html",
+					"html/illegalReminder.html"
+				],
+				"priority": 0
+			}
+		},
+		"idle": {
+			"resources": [
+				"img/aboutus.png",
+				"html/setIP.html",
+				"css/feedback.css",
+				"js/mui.picker.min.js",
+				"img/login_pwd.png",
+				"js/constants.js",
+				"img/icon_4.png",
+				"img/icon_5.png",
+				"js/util.js",
+				"js/mui.poppicker.js",
+				"img/head_placehold.png",
+				"css/iconfont.css",
+				"img/icon_1.png",
+				"img/perinfo.png",
+				"fonts/iconfont.ttf",
+				"img/card_zheng.jpg",
+				"js/mui.js",
+				"html/personInfo.html",
+				"img/loginbg.png",
+				"html/showCardId.html",
+				"js/map.js",
+				"img/nodata.png",
+				"README.md",
+				"img/login_head.png",
+				"js/mui.picker.js",
+				"js/mui.pullToRefresh.material.js",
+				"fonts/mui.ttf",
+				"img/trailImg.png",
+				"js/badge.js",
+				"img/card_hand.jpg",
+				"img/updatepwd.png",
+				"css/mui.css",
+				"img/login_anquan.png",
+				"img/checkver.png",
+				"img/icon_3.png",
+				"js/feedback.js",
+				"img/head.jpg",
+				"js/md5.js",
+				"img/icon_6.png",
+				"html/BLEFind.html",
+				"html/showRealtimeLocation.html",
+				"css/view.css",
+				"html/showHistoryTrail.html",
+				"js/mui.min.js",
+				"img/home_bg.png",
+				"img/card_fan.jpg",
+				"css/mui.poppicker.css",
+				"img/find_people.png",
+				"js/mui.indexedlist.js",
+				"js/parse.js",
+				"html/main_tab.html",
+				"img/icon_2.png",
+				"img/map_start.png",
+				"js/mui.pullToRefresh.js",
+				"html/updatePwd.html",
+				"img/map_end.png",
+				"css/mui.picker.css",
+				"css/mui.indexedlist.css",
+				"img/sliderbg.png",
+				"css/pullrefresh.css",
+				"img/refresh.png",
+				"js/dateutil.js",
+				"js/view.js",
+				"html/setting.html",
+				"css/mui.min.css",
+				"html/main-slider.html",
+				"img/login_user.png",
+				"html/about_us.html"
+			]
 		}
 	}
 }

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css" />
+
+		<style type="text/css">
+			body,
+			.mui-content {
+				height: 100%;
+				background: url(../img/sliderbg.png);
+				background-size: 100% 300%;
+				font-family: "微软雅黑";
+				color: #fff;
+			}
+			
+			.mui-content {
+				display: -webkit-box;
+				-webkit-box-align: center;
+				-webkit-box-orient: vertical;
+			}
+			
+			#headDiv {
+				margin-top: 25px;
+				width: 80px;
+				height: 80px;
+				padding: 0px;
+				background: #ececec;
+				border-radius: 80px;
+				box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4);
+				-moz-border-radius: 80px;
+				-webkit-border-radius: 80px;
+			}
+			
+			#headImg {
+				width: 80px;
+				height: 80px;
+				line-height: 0;
+				/* remove line-height */
+				display: inline-block;
+				/* circle wraps image */
+				border-radius: 50%;
+				/* relative value */
+				-moz-border-radius: 50%;
+				-webkit-border-radius: 50%;
+				transition: linear 0.25s;
+			}
+			
+			#name {
+				margin-top: 10px;
+				font-size: 18px;
+			}
+			
+			.line {
+				height: 1px;
+				width: 100%;
+				background: #618FB7;
+				overflow: hidden;
+				margin-top: 20px;
+			}
+			
+			.itemdiv {
+				display: flex;
+				justify-content: center;
+				align-items: Center;
+				margin: 25px auto;
+			}
+			
+			.itemimg {
+				width: 20px;
+				margin-right: 15px;
+			}
+			
+			#close-btn {
+				position: absolute;
+				bottom: 20px;
+				padding-top: 10px;
+				padding-bottom: 10px;
+				margin-left: 15%;
+				width: 70%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="mui-content">
+			<div id="headDiv">
+				<img src="../img/head.png" id="headImg" />
+			</div>
+			<div id="name">未知用户</div>
+
+			<div class="line"></div>
+
+			<div>
+				<div class="itemdiv" id="personalInfo" style="display: none;">
+					<img src="../img/perinfo.png" class="itemimg" />个人中心
+				</div>
+
+				<div class="itemdiv" id="updatePwd">
+					<img src="../img/updatepwd.png" class="itemimg" />修改密码
+				</div>
+
+				<div class="itemdiv" id="checkUpdate">
+					<img src="../img/checkver.png" class="itemimg" />检查更新
+				</div>
+
+				<div class="itemdiv" id="aboutUs">
+					<img src="../img/aboutus.png" class="itemimg" />关于我们
+				</div>
+
+			</div>
+			<button id="close-btn" type="button" class="mui-btn mui-btn-danger">退出登录</button>
+		</div>
+
+		<script type="text/javascript" src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/constants.js"></script>
+		<script type="text/javascript" src="../js/util.js"></script>
+		<script type="text/javascript" src="../js/view.js"></script>
+
+		<script>
+			document.getElementById('headImg').src = window.localStorage.getItem(pictureUrl);
+			document.getElementById('name').innerHTML = window.localStorage.getItem(Name);
+
+			document.getElementById('personalInfo').addEventListener('tap', function() {
+				closeMenu();
+
+				mui.openWindow({
+					id: Math.random() + '',
+					url: 'personInfo.html',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+				});
+			}, false);
+
+			document.getElementById('aboutUs').addEventListener('tap', function() {
+				closeMenu();
+
+				mui.openWindow({
+					id: Math.random() + '',
+					url: 'about_us.html',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+				});
+			}, false);
+
+			document.getElementById('updatePwd').addEventListener('tap', function() {
+				closeMenu();
+
+				mui.openWindow({
+					id: Math.random() + '',
+					url: 'updatePwd.html',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+				});
+			}, false);
+
+			document.getElementById('checkUpdate').addEventListener('tap', function() {
+				requestCheckNewVersion();
+			}, false);
+
+			document.getElementById('close-btn').addEventListener('tap', function() {
+				closeMenu();
+
+				mui.fire(mui.currentWebview.opener(), "logout");
+			}, false);
+		</script>
+
+		<script>
+			// 检查更新函数
+			function requestCheckNewVersion() {
+				showProgressDialog("正在检查新版本...");
+
+				mui.ajax(FIR_CHECK_URL, {
+					dataType: 'json',
+					type: 'get',
+					timeout: TIMEOUT,
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					success: function(data) {
+						hideProgressDialog();
+
+						responseCheckNewVersion(data);
+					},
+					error: function(xhr, type, errorThrown) {
+						hideProgressDialog();
+
+						mui.toast(getHttpErrorDesp(type));
+					}
+				});
+			}
+
+			function responseCheckNewVersion(resp) {
+				try {
+					mui.getJSON("../manifest.json", null, function(data) {
+						var localVer = data.version.code;
+						var newVer = resp.version;
+						if((newVer - 0) > (localVer - 0)) {
+							mui.confirm('有新版本需要立即更新吗？', '检测到新版本', ['取消', '确认'], function(e) {
+								if(e.index == 1) {
+									plus.runtime.openURL(FIR_LINK);
+								}
+							})
+
+						} else {
+							mui.toast('当前已是最新版本');
+						}
+
+					});
+				} catch(e) {
+					console.log(e);
+					mui.toast('当前已是最新版本');
+				}
+			}
+		</script>
+
+		<script type="text/javascript" charset="utf-8">
+			mui.init({
+				keyEventBind: {
+					backbutton: false,
+					menubutton: false
+				}
+			});
+
+			//获得侧滑主窗口webview对象
+			var main = null;
+			mui.plusReady(function() {
+				main = plus.webview.currentWebview().opener();
+			})
+
+			/**
+			 * 关闭侧滑菜单
+			 */
+			function closeMenu() {
+				mui.fire(main, "menu:swipeleft");
+			}
+
+			//优化显示出来的侧滑菜单，只需监听该菜单的左滑事件，然后将其关闭即可；在菜单上右滑，不做任何操作；
+			window.addEventListener("swipeleft", closeMenu);
+			document.getElementById("close-btn").addEventListener('tap', closeMenu);
+			mui.menu = closeMenu;
+		</script>
+	</body>
+
+</html>

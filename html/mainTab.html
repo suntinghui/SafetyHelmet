@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/iconfont.css" />
+		<link rel="stylesheet" href="../css/view.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-menu mui-icon mui-icon-bars mui-pull-left"></a>
+			<a id="BLEFind" class="mui-icon mui-icon-search mui-pull-right"></a>
+			<h1 id="title" class="mui-title">安全帽智能平台</h1>
+		</header>
+		
+		<div class="mui-content">
+			<nav class="mui-bar mui-bar-tab tabbar">
+				<a class="mui-tab-item mui-active" id="fieldDistr.html" target="fieldDistr.html">
+					<span class="mui-icon iconfont icon-xianchang"><span id="mapCount" class="mui-badge" style="margin-left: -5px; visibility: hidden;">0</span></span>
+					<span class="mui-tab-label">现场分布</span>
+				</a>
+				<a class="mui-tab-item" id="illegalReminder.html" target="illegalReminder.html">
+					<span class="mui-icon iconfont icon-tixing"><span id="reminderCount" class="mui-badge" style="margin-left: -5px; visibility: hidden;">0</span></span>
+					<span class="mui-tab-label">违规提醒</span>
+				</a>
+				<a class="mui-tab-item" id="helmetState.html" target="helmetState.html">
+					<span class="mui-icon iconfont icon-anquanmao1"></span>
+					<span class="mui-tab-label">安全帽一览</span>
+				</a>
+				<a class="mui-tab-item" id="trailList.html" target="trailList.html">
+					<span class="mui-icon iconfont icon-guiji"></span>
+					<span class="mui-tab-label">人员轨迹</span>
+				</a>
+			</nav>
+
+		</div>
+	</body>
+
+	<script src="../js/mui.min.js"></script>
+	<script src="../js/constants.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/util.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" src="../js/view.js"></script>
+
+	<script>
+		// 解决软键盘弹出时底部元素上浮的问题  http://ask.dcloud.net.cn/article/12615
+		var subpages = ['fieldDistr.html', 'illegalReminder.html', 'helmetState.html', 'trailList.html'];
+		var subpage_style = {
+			top: '50px',
+			bottom: '51px'
+		};
+
+		var aniShow = {};
+
+		//创建子页面，首个选项卡页面显示，其它均隐藏；
+		mui.plusReady(function() {
+			var self = plus.webview.currentWebview();
+			for(var i = 0; i < subpages.length; i++) {
+				var temp = {};
+				var sub = plus.webview.create(subpages[i], subpages[i], subpage_style);
+				if(i > 0) {
+					sub.hide();
+				} else {
+					temp[subpages[i]] = "true";
+					mui.extend(aniShow, temp);
+				}
+				self.append(sub);
+			}
+		});
+
+		//当前激活选项
+		var activeTab = subpages[0];
+		var title = document.getElementById("title");
+		//选项卡点击事件
+		mui('.mui-bar-tab').on('tap', 'a', function(e) {
+			var targetTab = this.getAttribute('target');
+
+			if(targetTab == activeTab) {
+				return;
+			}
+			//更换标题
+			title.innerHTML = this.querySelector('.mui-tab-label').innerHTML;
+
+			//显示目标选项卡
+			//若为iOS平台或非首次显示，则直接显示
+			if(mui.os.ios || aniShow[targetTab]) {
+				plus.webview.show(targetTab);
+			} else {
+				//否则，使用fade-in动画，且保存变量
+				var temp = {};
+				temp[targetTab] = "true";
+				mui.extend(aniShow, temp);
+				plus.webview.show(targetTab, "fade-in", 300);
+			}
+			//隐藏当前;
+			plus.webview.hide(activeTab);
+			//更改当前活跃的选项卡
+			activeTab = targetTab;
+		});
+
+		window.addEventListener('reminder', function(event) {
+			var count = event.detail.count;
+			var reminderCount = document.getElementById('reminderCount');
+			if(count > 0) {
+				reminderCount.style.visibility = 'visible';
+				reminderCount.innerHTML = count;
+			} else {
+				reminderCount.style.visibility = 'hidden';
+			}
+		});
+
+		window.addEventListener('fieldDistr', function(event) {
+			var count = event.detail.count;
+			var mapCount = document.getElementById('mapCount');
+			if(count > 0) {
+				mapCount.style.visibility = 'visible';
+				mapCount.innerHTML = count;
+			} else {
+				mapCount.style.visibility = 'hidden';
+			}
+		});
+
+		function refreshReminderCount() {
+			console.log('=====');
+		}
+
+		document.getElementById('BLEFind').addEventListener('tap', function() {
+			mui.openWindow({
+				url: "BLEFind.html",
+				id: "BLEFind.html",
+			});
+		}, false);
+
+		// 再按一次退出应用
+		if(mui.os.android) {
+			var first = null;
+			mui.back = function() {
+				//首次按键，提示‘再按一次退出应用’
+				if(!first) {
+					first = new Date().getTime();
+					mui.toast('再按一次退出应用');
+					setTimeout(function() {
+						first = null;
+					}, 1000);
+				} else {
+					if(new Date().getTime() - first < 1000) {
+						plus.runtime.quit();
+					}
+				}
+			};
+		}
+	</script>
+
+	<script>
+		window.addEventListener("logout", logout);
+
+		function logout() {
+			mui.confirm('您确定要注销登录吗？', '提示', ['取消', '确认'], function(e) {
+				if(e.index == 1) {
+					window.localStorage.setItem(CheckAutoLogin, false);
+
+					// 获取所有Webview窗口
+					var curr = plus.webview.currentWebview();
+					var wvs = plus.webview.all();
+					for(var i = 0, len = wvs.length; i < len; i++) {
+						//关闭除setting页面外的其他页面
+						if(wvs[i].getURL() == curr.getURL())
+							continue;
+						plus.webview.close(wvs[i]);
+					}
+					//打开login页面后再关闭
+					plus.webview.open('login.html');
+					curr.close();
+
+					mui.toast("已退出登录");
+				}
+			});
+		}
+	</script>
+
+	<script>
+		var main, menu, mask = mui.createMask(_closeMenu);
+		var showMenu = false;
+
+		var mode = 'menu-move';
+
+		mui.init({
+			swipeBack: false,
+			beforeback: back
+		});
+
+		function back() {
+			if(showMenu) {
+				//菜单处于显示状态，返回键应该先关闭菜单,阻止主窗口执行mui.back逻辑；
+				closeMenu();
+				return false;
+			} else {
+				//菜单处于隐藏状态，执行返回时，要先close菜单页面，然后继续执行mui.back逻辑关闭主窗口；
+				menu.close('none');
+				return true;
+			}
+		}
+
+		//plusReady事件后，自动创建menu窗口；
+		mui.plusReady(function() {
+			if(mui.os.ios) {
+				mode = 'all-move';
+			}
+
+			main = plus.webview.currentWebview();
+			//setTimeout的目的是等待窗体动画结束后，再执行create webview操作，避免资源竞争，导致窗口动画不流畅；
+			setTimeout(function() {
+				//侧滑菜单默认隐藏，这样可以节省内存；
+				menu = mui.preload({
+					id: 'mainMenu',
+					url: 'mainMenu.html',
+					styles: {
+						left: 0,
+						width: '70%',
+						zindex: 9997
+					}
+				});
+			}, 300);
+
+		});
+		/**
+		 * 显示菜单菜单
+		 */
+		function openMenu() {
+			if(!showMenu) {
+				//侧滑菜单处于隐藏状态，则立即显示出来；
+				//显示完毕后，根据不同动画效果移动窗体；
+				menu.show('none', 0, function() {
+					switch(mode) {
+						case 'main-move':
+							//主窗体开始侧滑；
+							main.setStyle({
+								left: '70%',
+								transition: {
+									duration: 150
+								}
+							});
+							break;
+						case 'menu-move':
+							menu.setStyle({
+								left: '0%',
+								transition: {
+									duration: 150
+								}
+							});
+							break;
+						case 'all-move':
+							main.setStyle({
+								left: '70%',
+								transition: {
+									duration: 150
+								}
+							});
+							menu.setStyle({
+								left: '0%',
+								transition: {
+									duration: 150
+								}
+							});
+							break;
+					}
+				});
+				//显示遮罩
+				mask.show();
+				showMenu = true;
+			}
+		}
+		/**
+		 * 关闭侧滑菜单
+		 */
+		function closeMenu() {
+			_closeMenu();
+			//关闭遮罩
+			mask.close();
+		}
+
+		/**
+		 * 关闭侧滑菜单（业务部分）
+		 */
+		function _closeMenu() {
+			if(showMenu) {
+				//关闭遮罩；
+				switch(mode) {
+					case 'main-move':
+						//主窗体开始侧滑；
+						main.setStyle({
+							left: '0',
+							transition: {
+								duration: 150
+							}
+						});
+						break;
+					case 'menu-move':
+						//主窗体开始侧滑；
+						menu.setStyle({
+							left: '-70%',
+							transition: {
+								duration: 150
+							}
+						});
+						break;
+					case 'all-move':
+						//主窗体开始侧滑；
+						main.setStyle({
+							left: '0',
+							transition: {
+								duration: 150
+							}
+						});
+						//menu页面同时移动
+						menu.setStyle({
+							left: '-70%',
+							transition: {
+								duration: 150
+							}
+						});
+
+						break;
+				}
+
+				//等窗体动画结束后，隐藏菜单webview，节省资源；
+				setTimeout(function() {
+					menu.hide();
+				}, 200);
+				//改变标志位
+				showMenu = false;
+			}
+		}
+
+		//点击左上角图标，打开侧滑菜单；
+		document.querySelector('.mui-icon-bars').addEventListener('tap', openMenu);
+		//在android4.4中的swipe事件，需要preventDefault一下，否则触发不正常
+		//故，在dragleft，dragright中preventDefault
+		window.addEventListener('dragright', function(e) {
+			e.detail.gesture.preventDefault();
+		});
+		window.addEventListener('dragleft', function(e) {
+			e.detail.gesture.preventDefault();
+		});
+		//主界面向右滑动，若菜单未显示，则显示菜单；否则不做任何操作；
+		window.addEventListener("swiperight", openMenu);
+		//主界面向左滑动，若菜单已显示，则关闭菜单；否则，不做任何操作；
+		window.addEventListener("swipeleft", closeMenu);
+		//menu页面向左滑动，关闭菜单；
+		window.addEventListener("menu:swipeleft", closeMenu);
+
+		//重写mui.menu方法，Android版本menu按键按下可自动打开、关闭侧滑菜单；
+		mui.menu = function() {
+			if(showMenu) {
+				closeMenu();
+			} else {
+				openMenu();
+			}
+		}
+	</script>
+
+</html>

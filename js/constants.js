@@ -25,18 +25,6 @@ function getChannel() {
 	return 'web';
 }
 
-// 是否正在显示侧边栏
-var SHOWMENU = 'SHOWMENU';
-// open 1为打开， 0为关闭侧边栏
-function menuShow(open) {
-	window.localStorage.setItem(SHOWMENU, open);
-}
-
-// 返回true表示打开状态
-function menuState() {
-	return(window.localStorage.getItem(SHOWMENU) == '1');
-}
-
 var SET_HOST = 'SET_HOST';
 
 var TIMEOUT = 20000
@@ -50,6 +38,7 @@ var UserName = "UserName";
 var AdminId = 'AdminId';
 var pictureUrl = 'pictureUrl';
 var Name = "Name";
+var LoginRespInfo = 'LoginRespInfo'; // 因为有个人信息修改，所以干脆保存响应报文
 
 var SaveUserName = 'SaveUserName';
 var SavePwd = 'SavePwd';

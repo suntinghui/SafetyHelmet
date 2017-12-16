@@ -1,3 +1,4 @@
+
 html,
 body {
 	height: 100%;
@@ -6,7 +7,7 @@ body {
 }
 
 .mui-segmented-control-yao {
-	border: 1px solid #7DA9CA;
+	border: 1px solid #007FCA;
 }
 
 .mui-segmented-control-yao .mui-control-item {
@@ -17,17 +18,17 @@ body {
 
 .mui-segmented-control-yao .mui-control-item.mui-active {
 	color: #fff;
-	background: -webkit-linear-gradient(top, #7DA9CA, #4A87B6, #7DA9CA);
+	background: #007FCA;
 }
 
 .mui-segmented-control-yao.mui-segmented-control-inverted .mui-control-item.mui-active {
-	color: #7DA9CA;
-	border-bottom: 2px solid #7DA9CA;
+	color: #007FCA;
+	border-bottom: 2px solid #007FCA;
 	background: none;
 }
 
 .mui-segmented-control-negative.mui-segmented-control-inverted~.mui-slider-progress-bar {
-	background-color: #7DA9CA;
+	background-color: #007FCA;
 }
 
 
@@ -43,7 +44,7 @@ body {
 }
 
 .oabtn {
-	/*background: -webkit-linear-gradient(top, #7DA9CA, #4A87B6, #7DA9CA);*/
+	/*background: -webkit-linear-gradient(top, #007FCA, #4A87B6, #007FCA);*/
 	background: #0084C8;
 }
 
