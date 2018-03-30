@@ -1,5 +1,5 @@
-// http://103.43.185.166:8066/MobileOffice/
-var DEFAULT_HOST = 'tobefull.com';
+//var DEFAULT_HOST = 'tobefull.com';
+var DEFAULT_HOST = '101.200.233.58:8081';
 
 function getLocalStoreageHost() {
 	var host = window.localStorage.getItem(SET_HOST);
